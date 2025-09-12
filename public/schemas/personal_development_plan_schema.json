@@ -1,0 +1,177 @@
+{
+"templateName": "Personal Development Plan",
+"nodeTypes": [
+{
+"id": "nt_plan_root",
+"name": "Development Plan",
+"icon": "Folder",
+"description": "The main container for your entire development plan."
+},
+{
+"id": "nt_goal",
+"name": "Goal",
+"icon": "Folder",
+"description": "A high-level life area to focus on, such as Personal, Work, or Family."
+},
+{
+"id": "nt_project",
+"name": "Project",
+"icon": "Article",
+"description": "A specific, actionable project to achieve a goal."
+},
+{
+"id": "nt_feature",
+"name": "Feature / Module",
+"icon": "ChevronRight",
+"description": "A significant component or feature within a project."
+},
+{
+"id": "nt_subfeature",
+"name": "Sub-Feature",
+"icon": "ChevronRight",
+"description": "A smaller, more detailed part of a feature."
+},
+{
+"id": "nt_task",
+"name": "Task",
+"icon": "CheckCircleIcon",
+"description": "A specific, individual task that needs to be completed."
+},
+{
+"id": "nt_resources",
+"name": "Resources",
+"icon": "Info",
+"description": "Links, documents, or notes related to a project or task."
+}
+],
+"nodes": [
+{
+"id": "s_root_dev_plan",
+"parentId": null,
+"typeId": "nt_plan_root",
+"name": "My Development Plan",
+"minCount": 1,
+"maxCount": 1
+},
+{
+"id": "s_goal_personal",
+"parentId": "s_root_dev_plan",
+"typeId": "nt_goal",
+"name": "Personal Goal",
+"minCount": 1,
+"maxCount": 1
+},
+{
+"id": "s_goal_family",
+"parentId": "s_root_dev_plan",
+"typeId": "nt_goal",
+"name": "Family Goal",
+"minCount": 1,
+"maxCount": 1
+},
+{
+"id": "s_goal_work",
+"parentId": "s_root_dev_plan",
+"typeId": "nt_goal",
+"name": "Work Goal",
+"minCount": 1,
+"maxCount": 1
+},
+{
+"id": "s_goal_society",
+"parentId": "s_root_dev_plan",
+"typeId": "nt_goal",
+"name": "Society Goal",
+"minCount": 1,
+"maxCount": 1
+},
+{
+"id": "s_goal_spiritual",
+"parentId": "s_root_dev_plan",
+"typeId": "nt_goal",
+"name": "Spiritual Goal",
+"minCount": 1,
+"maxCount": 1
+},
+{
+"id": "s_project_personal",
+"parentId": "s_goal_personal",
+"typeId": "nt_project",
+"name": "New Project",
+"minCount": 1,
+"maxCount": null
+},
+{
+"id": "s_project_family",
+"parentId": "s_goal_family",
+"typeId": "nt_project",
+"name": "New Project",
+"minCount": 1,
+"maxCount": null
+},
+{
+"id": "s_project_work",
+"parentId": "s_goal_work",
+"typeId": "nt_project",
+"name": "New Project",
+"minCount": 1,
+"maxCount": null
+},
+{
+"id": "s_project_society",
+"parentId": "s_goal_society",
+"typeId": "nt_project",
+"name": "New Project",
+"minCount": 1,
+"maxCount": null
+},
+{
+"id": "s_project_spiritual",
+"parentId": "s_goal_spiritual",
+"typeId": "nt_project",
+"name": "New Project",
+"minCount": 1,
+"maxCount": null
+},
+{
+"id": "s_project_children_feature",
+"parentId": "s_project_personal",
+"typeId": "nt_feature",
+"name": "Feature / Module",
+"minCount": 0,
+"maxCount": null
+},
+{
+"id": "s_project_children_resources",
+"parentId": "s_project_personal",
+"typeId": "nt_resources",
+"name": "Resources",
+"minCount": 0,
+"maxCount": null
+},
+{
+"id": "s_feature_children_subfeature",
+"parentId": "s_project_children_feature",
+"typeId": "nt_subfeature",
+"name": "Sub-Feature",
+"minCount": 0,
+"maxCount": null
+},
+{
+"id": "s_subfeature_children_task",
+"parentId": "s_feature_children_subfeature",
+"typeId": "nt_task",
+"name": "Task",
+"minCount": 0,
+"maxCount": null
+},
+{
+"id": "s_subfeature_children_resources",
+"parentId": "s_feature_children_subfeature",
+"typeId": "nt_resources",
+"name": "Resources",
+"minCount": 0,
+"maxCount": null
+}
+]
+}

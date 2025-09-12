@@ -1,0 +1,6 @@
+/* In your global CSS */
+.gradient-texts {
+  background: linear-gradient(90deg, hsl(51, 17%, 92%), #00f2fe); /* Blue → Cyan */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

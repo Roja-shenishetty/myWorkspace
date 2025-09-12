@@ -1,0 +1,144 @@
+.docs-demo-device {
+  width: 344px;         /* Or desired phone width */
+  height: 704px;        /* Or desired phone height */
+  margin: auto;
+  background: #1a1a1a;  /* Black or deep gray bezel */
+  border-radius: 50px;  /* Large rounded corners */
+  position: relative;
+  padding: 22px;        /* Creates the bezel thickness */
+  box-shadow: 0 4px 32px rgba(0,0,0,0.4); /* Soft outer shadow */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.docs-demo-device.android {
+  border-radius: 44px; /* Android style */
+}
+
+.docs-demo-device.ios {
+  border-radius: 62px; /* iOS style */
+}
+
+/* Device figure container */
+.docs-demo-device > figure {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* SVG bar for Android */
+.docs-demo-device__md-bar {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+}
+
+/* SVG notch for iOS */
+.docs-demo-device__ios-notch {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 165px;
+  z-index: 2;
+}
+
+/* Show Android bar only in Android mode */
+.docs-demo-device.android .docs-demo-device__md-bar {
+  display: block;
+}
+
+.docs-demo-device.ios .docs-demo-device__md-bar {
+  display: none;
+}
+
+/* Show iOS notch only in iOS mode */
+.docs-demo-device.ios .docs-demo-device__ios-notch {
+  display: block;
+}
+
+.docs-demo-device.android .docs-demo-device__ios-notch {
+  display: none;
+}
+
+/* Device viewport (iframe) */
+.docs-demo-device > figure > iframe {
+  border: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 20px); /* Offset for bar/notch */
+  background: #fff;
+  border-radius: inherit;
+  box-shadow: 0 2px 8px rgba(2,8,20,0.08);
+  z-index: 1;
+}
+
+
+.docs-demo-mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ecf0f5;
+  border-radius: 18px;
+  height: 32px;
+  margin: 1rem auto 0;
+  width: 140px;
+  box-shadow: 0 2px 4px rgba(0,16,46,.07);
+  position: relative;
+}
+
+/* Both toggle buttons */
+.docs-demo-mode-toggle button {
+  flex: 1 1 50%;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  color: #5b708b;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: -0.02em;
+  line-height: 24px;
+  transition: background 0.25s, color 0.25s, font-weight 0.2s;
+  padding: 3px 0;
+  margin: 0 2px;
+  outline: none;
+}
+
+/* Selected (active) state for button */
+.docs-demo-mode-toggle button.is-selected {
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0,16,46,0.12);
+  color: #222;
+  font-weight: 600;
+  z-index: 2;
+  transition: background 0.25s, color 0.25s, font-weight 0.2s;
+}
+
+/* Optional: Add a focus outline for accessibility */
+.docs-demo-mode-toggle button:focus {
+  outline: 2px solid #4a90e2;
+}
+
+/* Optional: Add hover style for better feedback */
+.docs-demo-mode-toggle button:hover:not(.is-selected) {
+  background: #e4e6eb;
+  color: #222;
+}
+
+/* Spacing between buttons */
+.docs-demo-mode-toggle button:first-child {
+  margin-right: 2px;
+}
+.docs-demo-mode-toggle button:last-child {
+  margin-left: 2px;
+}

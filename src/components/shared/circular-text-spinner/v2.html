@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Circular Animated Text Fixed</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f0f0f0;
+        margin: 0;
+      }
+
+      .pxl-text-spin1 {
+        width: 230px;
+        height: 230px;
+        background-color: #fff;
+        border-radius: 50%;
+        box-shadow: 0 22px 54px rgba(12, 12, 12, 0.26);
+        position: relative;
+      }
+
+      .pxl-item--logo {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+      }
+
+      .pxl-item--logo img {
+        max-height: 107px;
+        width: auto;
+      }
+
+      .pxl-item--text {
+        z-index: 2;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        animation: pxl_spin 16s linear infinite;
+        transform-origin: center center;
+      }
+
+      @keyframes pxl_spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      text {
+        font-size: 16px;
+        fill: #101010;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="pxl-text-spin1">
+      <div class="pxl-item--logo">
+        <img src="h2-logo.jpg" alt="Logo" />
+      </div>
+      <div class="pxl-item--text">
+        <svg viewBox="0 0 200 200">
+          <defs>
+            <path
+              id="circlePath"
+              d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
+            />
+          </defs>
+          <text dominant-baseline="middle">
+            <textPath
+              xlink:href="#circlePath"
+              startOffset="50%"
+              text-anchor="middle"
+            >
+              Work Manager helps your inventory keeping simple and hassle free
+            </textPath>
+          </text>
+        </svg>
+      </div>
+    </div>
+  </body>
+</html>

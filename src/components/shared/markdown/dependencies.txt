@@ -1,0 +1,10 @@
+npm install react-markdown
+npm install react-split
+npm install rehype-raw
+npm install react-syntax-highlighter
+npm install @uiw/react-codemirror                        
+npm install @codemirror/lang-markdown
+npm install @codemirror/view
+npm install use-debounce
+npm install html2pdf.js
+npm install remark-gfm

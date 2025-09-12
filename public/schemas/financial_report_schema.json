@@ -1,0 +1,79 @@
+{
+"templateName": "Quarterly Financial Report",
+"nodeTypes": [
+{
+"id": "nt_report",
+"name": "Financial Report",
+"icon": "Folder",
+"description": "The main container for the entire financial report."
+},
+{
+"id": "nt_section",
+"name": "Section",
+"icon": "Article",
+"description": "A major section of the report, like an Executive Summary."
+},
+{
+"id": "nt_subsection",
+"name": "Sub-Section",
+"icon": "ChevronRight",
+"description": "A sub-section within a major section, like Assets or Liabilities."
+},
+{
+"id": "nt_datatable",
+"name": "Data Table",
+"icon": "Info",
+"description": "A table containing financial figures."
+}
+],
+"nodes": [
+{
+"id": "s_root_report",
+"parentId": null,
+"typeId": "nt_report",
+"name": "Q3 Financial Report",
+"minCount": 1,
+"maxCount": 1
+},
+{
+"id": "s_section_summary",
+"parentId": "s_root_report",
+"typeId": "nt_section",
+"name": "Executive Summary",
+"minCount": 1,
+"maxCount": 1
+},
+{
+"id": "s_section_balance",
+"parentId": "s_root_report",
+"typeId": "nt_section",
+"name": "Balance Sheet",
+"minCount": 1,
+"maxCount": 1
+},
+{
+"id": "s_subsection_assets",
+"parentId": "s_section_balance",
+"typeId": "nt_subsection",
+"name": "Assets",
+"minCount": 1,
+"maxCount": 1
+},
+{
+"id": "s_subsection_liabilities",
+"parentId": "s_section_balance",
+"typeId": "nt_subsection",
+"name": "Liabilities",
+"minCount": 1,
+"maxCount": 1
+},
+{
+"id": "s_table_assets",
+"parentId": "s_subsection_assets",
+"typeId": "nt_datatable",
+"name": "Current Assets Table",
+"minCount": 1,
+"maxCount": 1
+}
+]
+}

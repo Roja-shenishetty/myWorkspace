@@ -1,0 +1,22 @@
+.url-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left:20px;
+  }
+  
+  .url-input {
+    width: 200px; /* Set your desired initial width */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    transition: width 0.3s;
+    padding-left: 3px;
+  }
+  
+  .link-icon {
+    position: absolute;
+    left: -20px;
+    color: #999;
+  }
+  

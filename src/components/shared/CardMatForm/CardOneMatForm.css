@@ -1,0 +1,123 @@
+
+  
+  .card-one {
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 425px;
+    background-color: #FFF;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px 0 rgba(153, 153, 153, 0.25);
+    padding: 0.75rem;
+  }
+  
+  .card-one-image {
+    border-radius: 8px;
+    overflow: hidden;
+    padding-bottom: 65%;
+    background-image: url("https://assets.codepen.io/285131/coffee_1.jpg");
+    background-repeat: no-repeat;
+    background-size: 150%;
+    background-position: 0 5%;
+    position: relative;
+  }
+  
+  .card-one-heading {
+    position: absolute;
+    left: 10%;
+    top: 15%;
+    right: 10%;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #735400;
+    line-height: 1.222;
+  }
+  .card-one-heading small {
+    display: block;
+    font-size: 0.75em;
+    font-weight: 400;
+    margin-top: 0.25em;
+  }
+  
+  .card-one-form {
+    padding: 2rem 1rem 0;
+  }
+  
+  .card-one-input {
+    display: flex;
+    flex-direction: column-reverse;
+    position: relative;
+    padding-top: 1.5rem;
+  }
+  .card-one-input + .card-one-input {
+    margin-top: .5rem;
+  }
+  
+  .card-one-input-label {
+    color: #8597a3;
+    position: absolute;
+    top: 1.5rem;
+    transition: 0.25s ease;
+  }
+  
+  .card-one-input-field {
+    border: 0;
+    --z-index: 1;
+    background-color: transparent;
+    border-bottom: 2px solid #eee;
+    font: inherit;
+    font-size: 1.125rem;
+    padding: 0.25rem 0;
+    margin:5px 0px;
+  }
+  .card-one-input-field:focus, .card-one-input-field:valid {
+    outline: 0;
+    border-bottom-color: #6658d3;
+  }
+  .card-one-input-field:focus + .card-one-input-label, .card-one-input-field:valid + .card-one-input-label {
+    color: green;
+    font-size:0.7rem;
+    transform: translateY(-0.5rem);  
+  }
+
+  .card-one-input-field:invalid + .card-one-input-label {
+    color: black;
+    /* -font-size:0.7rem;
+    -transform: translateY(+2.5rem);   */
+  }
+  
+  .card-one-action {
+    margin-top: 2rem;
+  }
+  
+  .card-one-action-button {
+    font: inherit;
+    font-size: 1.25rem;
+    padding: 1em;
+    width: 100%;
+    font-weight: 500;
+    background-color: #6658d3;
+    border-radius: 6px;
+    color: #FFF;
+    border: 0;
+  }
+  .card-one-action-button:focus {
+    outline: 0;
+    cursor: pointer;
+  }
+  .card-one-action-button:hover {
+       cursor: pointer;
+  }
+  
+  .card-one-card-info {
+    padding: 1rem 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #8597a3;
+  }
+  .card-one-card-info a {
+    display: block;
+    color: #6658d3;
+    text-decoration: none;
+  }

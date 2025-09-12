@@ -1,0 +1,27 @@
+/* Split.css */
+
+/* make the split container a flexbox (horizontal by default) */
+.split {
+  display: flex;
+  height: 100%;
+}
+
+/* Each gutter between panes */
+.gutter {
+  flex-shrink: 0;
+  background-color: #ddd;
+  background-repeat: no-repeat;
+  background-position: 50%;
+}
+
+/* horizontal split (vertical drag) */
+.gutter.gutter-horizontal {
+  width: 8px;              /* or whatever gutterSize you chose */
+  cursor: col-resize;
+}
+
+/* vertical split (horizontal drag) */
+.gutter.gutter-vertical {
+  height: 8px;
+  cursor: row-resize;
+}

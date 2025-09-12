@@ -1,0 +1,18 @@
+/* MDEditorResponsive.css */
+.md-editor-wrapper .w-md-editor-content {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Stack preview below editor on small screens */
+@media (max-width: 600px) {
+  .md-editor-wrapper .w-md-editor-content {
+    flex-direction: column;
+  }
+
+  /* Optional: prevent overflow in preview */
+  .md-editor-wrapper .w-md-editor-preview {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+}

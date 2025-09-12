@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demo of Circular Animated Text</title>
+  </head>
+  <style>
+    .pxl-text-spin1 {
+      width: 230px;
+      height: 230px;
+      background-color: #fff;
+      border-radius: 100%;
+      box-shadow: 0 22px 54px rgba(12, 12, 12, 0.26);
+      position: relative;
+    }
+
+    .pxl-text-spin1 .pxl-item--logo {
+      z-index: 1;
+    }
+
+    .pxl-text-spin1 .pxl-item--logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .pxl-text-spin1 .pxl-item--logo img {
+      max-height: 107px;
+    }
+
+    .pxl-text-spin1 .pxl-item--text {
+      font-size: 16px;
+      color: #101010;
+      font-weight: 700;
+      z-index: 2;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      white-space: nowrap;
+      -webkit-animation: pxl_spin 16s infinite linear;
+      animation: pxl_spin 16s infinite linear;
+    }
+
+    @keyframes pxl_spin {
+      from {
+        transform: rotate(0);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .elementor-widget-container {
+      margin: 4px 0 0 0;
+      max-width: 107px;
+      max-height: 107px;
+      width: 120px;
+      height: 120px;
+    }
+
+    .elementor img {
+      height: auto;
+      max-width: 100%;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  </style>
+  <body>
+    <div class="elementor-widget-container">
+      <div class="pxl-text-spin pxl-text-spin1" data-wow-delay="ms">
+        <div class="pxl-item--logo">
+          <img decoding="async" width="107" height="107" src="h2-logo.jpg" class="attachment-full" alt="" />
+        </div>
+        <div class="pxl-item--text">
+          <svg viewBox="0 0 200 200" width="200" height="200">
+            <defs>
+              <path
+                id="pxl-circle-pxl_text_spin-217202f-6393"
+                d="M 100, 100m -75, 0a 75, 75 0 1, 0 150, 0a 75, 75 0 1, 0 -150, 0"
+              ></path>
+            </defs>
+            <text>
+              <textPath alignment-baseline="top" xlink:href="#pxl-circle-pxl_text_spin-217202f-6393" class="text">
+                Sangam food is Simply Delicious food for your best satisfaction
+              </textPath>
+            </text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    
+  </body>
+</html>

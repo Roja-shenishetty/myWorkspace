@@ -1,0 +1,20 @@
+{
+    "templates": [
+        {
+            "name": "Blog Post Structure",
+            "path": "/schemas/blog_post_schema.json"
+        },
+        {
+            "name": "Client Onboarding Plan",
+            "path": "/schemas/project_plan_schema.json"
+        },
+        {
+            "name": "Quarterly Financial Report",
+            "path": "/schemas/financial_report_schema.json"
+        },
+        {
+            "name": "Personal Development Plan",
+            "path": "/schemas/personal_development_plan_schema.json"
+        }
+    ]
+}

@@ -1,0 +1,48 @@
+import React from 'react';
+
+const RunbookEditorIcon = (props) => {
+  return (
+    <svg 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      role="img" 
+      aria-label="Runbook Editor (Terminal with Pencil)" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      {/* Terminal window */}
+      <rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"></rect>
+      
+      {/* Window dots */}
+      <circle cx="6.5" cy="7" r="0.8" fill="currentColor"></circle>
+      <circle cx="9" cy="7" r="0.8" fill="currentColor"></circle>
+      <circle cx="11.5" cy="7" r="0.8" fill="currentColor"></circle>
+      
+      {/* Prompt */}
+      <path d="M6.75 12l3 2-3 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+      <path d="M11.5 15h3.25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
+      
+      {/* Pencil with horizontal stripes */}
+      <g transform="translate(14 6) rotate(-45)">
+        {/* Pencil body */}
+        <rect x="0" y="1.5" width="6" height="3" fill="currentColor" rx="0.3"></rect>
+        {/* Horizontal stripes */}
+        <rect x="0" y="2" width="6" height="0.4" fill="white" opacity="0.6"></rect>
+        <rect x="0" y="3" width="6" height="0.4" fill="white" opacity="0.6"></rect>
+        {/* Eraser */}
+        <rect x="6" y="1" width="1" height="4" fill="currentColor" rx="0.2"></rect>
+        {/* Sharp tip */}
+        <path d="M0 1.5 L-1.8 3 L0 4.5 Z" fill="currentColor"></path>
+        {/* Horizontal editing dots in front of nib */}
+        <circle cx="-2.6" cy="2.8" r="0.55" fill="currentColor"></circle>
+        <circle cx="-4.0" cy="2.8" r="0.55" fill="currentColor"></circle>
+      </g>
+      
+      <title>Runbook Editor (Terminal with Pencil and Horizontal Editing Dots)</title>
+    </svg>
+  );
+};
+
+export default RunbookEditorIcon;

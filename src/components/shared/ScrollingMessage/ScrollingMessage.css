@@ -1,0 +1,16 @@
+.scrolling-message-container {
+    overflow: hidden;
+  }
+  
+  .scrolling-message {
+    font-size: 14px;
+    color: #000;
+    white-space: nowrap;
+    animation: scrollText 10s linear infinite;
+  }
+  
+  @keyframes scrollText {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+  
