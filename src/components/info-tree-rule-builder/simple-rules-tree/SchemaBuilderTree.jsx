@@ -4,7 +4,7 @@ import {
   List, ListItem, Collapse, IconButton, Dialog, DialogTitle, DialogContent, DialogActions,
   Grid, Tooltip, Paper, AppBar, Toolbar, Chip,
   FormControlLabel, Switch, Badge, ListItemIcon, ListItemText, Drawer,
-  ListSubheader, Divider, Menu, Checkbox
+  ListSubheader, Divider, Menu, Checkbox, Stack, Card, CardContent
 } from '@mui/material';
 import {
   Folder as FolderIcon,
@@ -30,7 +30,19 @@ import {
   StarBorder as StarBorderIcon,
   Favorite as FavoriteIcon,
   PlaylistAdd as PlaylistAddIcon,
-  ViewList as ViewListIcon
+  ViewList as ViewListIcon,
+  TextFields as TextFieldsIcon,
+  Image as ImageIcon,
+  Link as LinkIcon,
+  Notes as NotesIcon,
+  AttachFile as AttachFileIcon,
+  Add as PlusIcon,
+  Description as FileTextIcon,
+  InsertDriveFile as FileImageIcon,
+  TextFields as TypeIcon,
+  People as UsersIcon,
+  Settings as SettingsIcon,
+  Book as BookIcon
 } from '@mui/icons-material';
 
 // --- SHARED UTILITIES & COMPONENTS ---
@@ -41,15 +53,350 @@ const iconMap = {
   Comment: <CommentIcon />,
   Article: <ArticleIcon />,
   Default: <ArticleIcon />,
+  FileText: <FileTextIcon />,
+  Image: <ImageIcon/>,
+  Users: <UsersIcon/>,
+  Settings: <SettingsIcon/>,
+  Star: <StarIcon/>,
+  Heart: <FavoriteIcon/>,
+  Book: <BookIcon/>
 };
 
 const buildTree = (nodes, parentId = null) =>
   nodes.filter(n => n.parentId === parentId)
     .map(n => ({ ...n, children: buildTree(nodes, n.id) }));
+    
+const getAncestors = (nodeId, allNodes) => {
+    const ancestors = [];
+    let currentNode = allNodes.find(n => n.id === nodeId);
+    while (currentNode && currentNode.parentId) {
+      const parent = allNodes.find(n => n.id === currentNode.parentId);
+      if (parent) { ancestors.push(parent.id); currentNode = parent; } 
+      else { break; }
+    }
+    return ancestors;
+};
+
+// --- NodeTypeEditor COMPONENT (User Provided) ---
+
+const FIELD_TYPES = [
+  { id: "text", name: "Text", icon: TypeIcon, description: "Single line text input" },
+  { id: "textarea", name: "Text Area", icon: FileTextIcon, description: "Multi-line text input" },
+  { id: "image", name: "Image", icon: ImageIcon, description: "Image upload field" },
+  { id: "file", name: "File", icon: FileImageIcon, description: "File upload field" },
+  { id: "url", name: "URL", icon: LinkIcon, description: "URL/link input" },
+];
+
+const ICONS = Object.keys(iconMap);
+
+function NodeTypeEditor({ nodeType, isOpen, onClose, onSave }) {
+  const [formData, setFormData] = useState({
+    name: "",
+    icon: "FileText",
+    description: "",
+    fields: [],
+  });
+
+  const [fieldDialogOpen, setFieldDialogOpen] = useState(false);
+  const [editingField, setEditingField] = useState(null);
+  const [fieldForm, setFieldForm] = useState({
+    name: "",
+    type: "text",
+    required: false,
+    minCount: 0,
+    maxCount: 1,
+  });
+
+  useEffect(() => {
+    if (nodeType) {
+      setFormData({
+        ...nodeType,
+        fields: nodeType.fields || [],
+      });
+    } else {
+      setFormData({
+        name: "",
+        icon: "FileText",
+        description: "",
+        fields: [],
+      });
+    }
+  }, [nodeType, isOpen]);
+
+  const handleSave = () => {
+    if (!formData.name.trim()) {
+      alert("Node type name is required");
+      return;
+    }
+
+    const savedNodeType = {
+      ...formData,
+      id: nodeType?.id || `nt_${Date.now()}`,
+    };
+
+    onSave(savedNodeType);
+  };
+
+  const handleAddField = () => {
+    setEditingField(null);
+    setFieldForm({
+      name: "",
+      type: "text",
+      required: false,
+      minCount: 0,
+      maxCount: 1,
+    });
+    setFieldDialogOpen(true);
+  };
+
+  const handleEditField = (field) => {
+    setEditingField(field);
+    setFieldForm({ ...field });
+    setFieldDialogOpen(true);
+  };
+
+  const handleSaveField = () => {
+    if (!fieldForm.name.trim()) {
+      alert("Field name is required");
+      return;
+    }
+
+    const newField = {
+      ...fieldForm,
+      id: editingField?.id || `field_${Date.now()}`,
+    };
+
+    setFormData((prev) => ({
+      ...prev,
+      fields: editingField
+        ? prev.fields.map((f) => (f.id === editingField.id ? newField : f))
+        : [...prev.fields, newField],
+    }));
+
+    setFieldDialogOpen(false);
+  };
+
+  const handleDeleteField = (fieldId) => {
+    setFormData((prev) => ({
+      ...prev,
+      fields: prev.fields.filter((f) => f.id !== fieldId),
+    }));
+  };
+
+  const renderFieldIcon = (typeId) => {
+    const fieldType = FIELD_TYPES.find((ft) => ft.id === typeId);
+    const IconCmp = fieldType?.icon || TypeIcon;
+    return <IconCmp sx={{ mr: 1, color: "primary.main" }} />;
+  };
+
+  return (
+    <>
+      <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
+        <DialogTitle>{nodeType ? "Edit Node Type" : "Create Node Type"}</DialogTitle>
+        <DialogContent dividers>
+          <Stack spacing={3}>
+            <TextField
+              label="Type Name"
+              value={formData.name}
+              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+              fullWidth
+              required
+              autoFocus
+            />
+
+            <FormControl fullWidth>
+              <InputLabel id="icon-label">Icon</InputLabel>
+              <Select
+                labelId="icon-label"
+                value={formData.icon}
+                label="Icon"
+                onChange={(e) => setFormData((prev) => ({ ...prev, icon: e.target.value }))}
+              >
+                {ICONS.map((icon) => (
+                  <MenuItem key={icon} value={icon}>
+                    {icon}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <TextField
+              label="Description"
+              value={formData.description}
+              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+              multiline
+              rows={3}
+              fullWidth
+            />
+
+            <Box>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                <Typography variant="h6">Content Fields</Typography>
+                <Button variant="contained" size="small" startIcon={<PlusIcon />} onClick={handleAddField}>
+                  Add Field
+                </Button>
+              </Box>
+
+              {formData.fields.length === 0 && (
+                <Box
+                  sx={{
+                    textAlign: "center",
+                    py: 4,
+                    border: "2px dashed",
+                    borderColor: "grey.400",
+                    borderRadius: 2,
+                    color: "text.secondary",
+                  }}
+                >
+                  <FileTextIcon sx={{ fontSize: 40, mb: 1, opacity: 0.5, mx: "auto" }} />
+                  <Typography>No content fields defined</Typography>
+                  <Typography variant="body2">Click "Add Field" to create custom content fields</Typography>
+                </Box>
+              )}
+
+              {formData.fields.map((field) => {
+                const fieldType = FIELD_TYPES.find((ft) => ft.id === field.type);
+                return (
+                  <Card key={field.id} variant="outlined" sx={{ mb: 2, borderLeft: 4, borderColor: "primary.main" }}>
+                    <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                      <Box display="flex" alignItems="center" gap={2}>
+                        {renderFieldIcon(field.type)}
+                        <Box>
+                          <Typography variant="subtitle1" fontWeight="600">
+                            {field.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Type: {fieldType?.name}
+                          </Typography>
+                          <Box mt={1} display="flex" gap={1}>
+                            {field.required && (
+                              <Chip label="Required" color="error" size="small" />
+                            )}
+                            {(field.type === "file" || field.type === "image") && (
+                              <Chip
+                                label={`${field.minCount}-${field.maxCount || "∞"}`}
+                                variant="outlined"
+                                size="small"
+                              />
+                            )}
+                          </Box>
+                        </Box>
+                      </Box>
+                      <Box>
+                        <IconButton color="primary" size="small" onClick={() => handleEditField(field)}>
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          color="error"
+                          size="small"
+                          onClick={() => handleDeleteField(field.id)}
+                          sx={{ ml: 1 }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </Box>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} variant="outlined">
+            Cancel
+          </Button>
+          <Button onClick={handleSave} variant="contained">
+            Save Node Type
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Field Editor Dialog */}
+      <Dialog open={fieldDialogOpen} onClose={() => setFieldDialogOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>{editingField ? "Edit Field" : "Add Field"}</DialogTitle>
+        <DialogContent dividers>
+          <Stack spacing={3}>
+            <TextField
+              label="Field Name"
+              value={fieldForm.name}
+              onChange={(e) => setFieldForm((prev) => ({ ...prev, name: e.target.value }))}
+              fullWidth
+              required
+              autoFocus
+            />
+
+            <FormControl fullWidth>
+              <InputLabel id="field-type-label">Field Type</InputLabel>
+              <Select
+                labelId="field-type-label"
+                value={fieldForm.type}
+                label="Field Type"
+                onChange={(e) => setFieldForm((prev) => ({ ...prev, type: e.target.value }))}
+              >
+                {FIELD_TYPES.map((type) => {
+                  const IconCmp = type.icon;
+                  return (
+                    <MenuItem key={type.id} value={type.id}>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <IconCmp fontSize="small" />
+                        {type.name}
+                      </Box>
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={fieldForm.required}
+                  onChange={(e) => setFieldForm((prev) => ({ ...prev, required: e.target.checked }))}
+                />
+              }
+              label="Required Field"
+            />
+
+            {(fieldForm.type === "file" || fieldForm.type === "image") && (
+              <Box display="flex" gap={2}>
+                <TextField
+                  label="Min Count"
+                  type="number"
+                  inputProps={{ min: 0 }}
+                  value={fieldForm.minCount}
+                  onChange={(e) => setFieldForm((prev) => ({ ...prev, minCount: Number(e.target.value) }))}
+                  fullWidth
+                />
+                <TextField
+                  label="Max Count"
+                  type="number"
+                  inputProps={{ min: 1 }}
+                  value={fieldForm.maxCount}
+                  onChange={(e) => setFieldForm((prev) => ({ ...prev, maxCount: Number(e.target.value) }))}
+                  fullWidth
+                />
+              </Box>
+            )}
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={() => setFieldDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button variant="contained" onClick={handleSaveField}>
+            Save Field
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+
 
 // --- SCHEMA BUILDER COMPONENT ---
 
-function SchemaBuilder({ initialSchema, onSaveSchema, onBuildInstance, favoriteNodeIds, onFavoritesChange }) {
+function SchemaBuilder({ initialSchema, onSaveSchema, onBuildInstance }) {
   const [nodes, setNodes] = useState(initialSchema.nodes);
   const [nodeTypes, setNodeTypes] = useState(initialSchema.nodeTypes);
   const [selectedNodeId, setSelectedNodeId] = useState(initialSchema.nodes[0]?.id || null);
@@ -69,10 +416,7 @@ function SchemaBuilder({ initialSchema, onSaveSchema, onBuildInstance, favoriteN
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
 
-  // New states for Search and Favorites
   const [searchTerm, setSearchTerm] = useState('');
-  const [favoritesOpen, setFavoritesOpen] = useState(false);
-
 
   useEffect(() => {
     setNodes(initialSchema.nodes);
@@ -84,21 +428,6 @@ function SchemaBuilder({ initialSchema, onSaveSchema, onBuildInstance, favoriteN
     setChildTypeId(initialSchema.nodeTypes[0]?.id || '');
     setChildName(initialSchema.nodeTypes[0]?.name || '');
   }, [initialSchema]);
-
-  const getAncestors = (nodeId, allNodes) => {
-    const ancestors = [];
-    let currentNode = allNodes.find(n => n.id === nodeId);
-    while (currentNode && currentNode.parentId) {
-      const parent = allNodes.find(n => n.id === currentNode.parentId);
-      if (parent) {
-        ancestors.push(parent.id);
-        currentNode = parent;
-      } else {
-        break;
-      }
-    }
-    return ancestors;
-  };
 
   const addTypeDetailsToTree = (nodesToProcess, types) => {
     return nodesToProcess.map(node => {
@@ -129,7 +458,6 @@ function SchemaBuilder({ initialSchema, onSaveSchema, onBuildInstance, favoriteN
     return addTypeDetailsToTree(rawTree, nodeTypes);
   }, [nodes, nodeTypes, searchTerm]);
 
-  // Auto-expand nodes when searching
   useEffect(() => {
     if (searchTerm.trim()) {
       setExpandedNodes(nodes.map(n => n.id));
@@ -218,24 +546,9 @@ function SchemaBuilder({ initialSchema, onSaveSchema, onBuildInstance, favoriteN
     };
     reader.readAsText(file); event.target.value = null;
   };
-
-  const handleToggleFavorite = (nodeId) => {
-    onFavoritesChange(prev => prev.includes(nodeId) ? prev.filter(id => id !== nodeId) : [...prev, nodeId]);
-  };
   
-  const handleFavoriteSelect = (nodeId) => {
-    const ancestors = getAncestors(nodeId, nodes);
-    const node = nodes.find(n => n.id === nodeId);
-    const children = nodes.filter(n => n.parentId === nodeId);
-    const nodesToExpand = children.length > 0 ? [...ancestors, nodeId] : ancestors;
-    setExpandedNodes(prev => [...new Set([...prev, ...nodesToExpand])]);
-    setSelectedNodeId(nodeId);
-    setFavoritesOpen(false);
-  };
-
   function SchemaTreeNode({ node, level }) {
     const isSelected = node.id === selectedNodeId;
-    const isFavorite = favoriteNodeIds.includes(node.id);
     return (
       <>
         <ListItem onClick={() => handleSelect(node.id)} sx={{ pl: 2 + level * 2, bgcolor: isSelected ? 'action.selected' : 'transparent', borderRadius: 1 }}>
@@ -246,11 +559,6 @@ function SchemaBuilder({ initialSchema, onSaveSchema, onBuildInstance, favoriteN
           <TextField variant="standard" value={node.name} onChange={e => handleNodeNameChange(node.id, e.target.value)} onClick={e => e.stopPropagation()} sx={{ flexGrow: 1 }}/>
           <Chip label={`min: ${node.minCount ?? 0}`} size="small" sx={{ mx: 1 }} />
           <Chip label={`max: ${node.maxCount ?? '*'}`} size="small" />
-          <Tooltip title={isFavorite ? "Remove from Favorites" : "Add to Favorites"}>
-            <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleToggleFavorite(node.id); }}>
-              {isFavorite ? <StarIcon color="warning" /> : <StarBorderIcon />}
-            </IconButton>
-          </Tooltip>
           <Tooltip title="Edit Schema Rule"><IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEditClick(node); }}><EditIcon /></IconButton></Tooltip>
           <Tooltip title="Add Child Schema Rule"><IconButton size="small" onClick={(e) => { e.stopPropagation(); handleAddChildClick(node.id); }}><AddCircleIcon /></IconButton></Tooltip>
           {node.parentId && (<Tooltip title="Delete Schema Rule"><IconButton size="small" onClick={(e) => { e.stopPropagation(); handleDeleteClick(node); }}><DeleteIcon color="error" /></IconButton></Tooltip>)}
@@ -266,13 +574,8 @@ function SchemaBuilder({ initialSchema, onSaveSchema, onBuildInstance, favoriteN
 
   return (
     <Paper sx={{ p: 2, m: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-        <Typography variant="h5" gutterBottom sx={{mb:0}}>Schema Builder</Typography>
-        <Button variant="outlined" startIcon={<FavoriteIcon />} onClick={() => setFavoritesOpen(true)} disabled={favoriteNodeIds.length === 0}>
-            Favorites ({favoriteNodeIds.length})
-        </Button>
-      </Box>
-      <TextField label="Search Nodes..." fullWidth value={searchTerm} onChange={e => setSearchTerm(e.target.value)} margin="normal" sx={{mt: 0}} />
+      <Typography variant="h5" gutterBottom>Schema Builder</Typography>
+      <TextField label="Search Nodes..." fullWidth value={searchTerm} onChange={e => setSearchTerm(e.target.value)} margin="normal" />
       <Box sx={{ border: '1px solid #ddd', borderRadius: 1, minHeight: 200, p: 1, my: 2 }}>
         <List dense>{tree.map(node => <SchemaTreeNode key={node.id} node={node} level={0} />)}</List>
       </Box>
@@ -316,13 +619,6 @@ function SchemaBuilder({ initialSchema, onSaveSchema, onBuildInstance, favoriteN
         <DialogContent><Typography>Are you sure you want to delete the node "<strong>{nodeToDelete?.name}</strong>"? This will also delete all its children.</Typography></DialogContent>
         <DialogActions><Button onClick={() => setConfirmOpen(false)}>Cancel</Button><Button onClick={handleDeleteConfirm} variant="contained" color="error">Delete</Button></DialogActions>
       </Dialog>
-      <Dialog open={favoritesOpen} onClose={() => setFavoritesOpen(false)} fullWidth maxWidth="xs">
-        <DialogTitle>Favorite Nodes</DialogTitle>
-        <DialogContent dividers>
-            <List>{favoriteNodeIds.map(favId => { const favNode = nodes.find(n => n.id === favId); if (!favNode) return null; return (<ListItem button key={favId} onClick={() => handleFavoriteSelect(favId)}><ListItemText primary={favNode.name} /></ListItem>);})}</List>
-        </DialogContent>
-        <DialogActions><Button onClick={() => setFavoritesOpen(false)}>Close</Button></DialogActions>
-      </Dialog>
     </Paper>
   );
 }
@@ -330,7 +626,7 @@ function SchemaBuilder({ initialSchema, onSaveSchema, onBuildInstance, favoriteN
 
 // --- INSTANCE CREATOR COMPONENT ---
 
-function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, nodes, setNodes, customLists, setCustomLists, onImportInstance }) {
+function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, setFavoriteNodeIds, nodes, setNodes, customLists, setCustomLists, onImportInstance }) {
   const [selectedNodeId, setSelectedNodeId] = useState(nodes[0]?.id || null);
   const [expandedNodes, setExpandedNodes] = useState([nodes[0]?.id]);
   const [showRequirements, setShowRequirements] = useState(true);
@@ -342,26 +638,52 @@ function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, nodes, setNo
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [nodeToDelete, setNodeToDelete] = useState(null);
   const fileInputRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [isListDialogOpen, setIsListDialogOpen] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [listMenuAnchorEl, setListMenuAnchorEl] = useState(null);
   const [nodeForListMenu, setNodeForListMenu] = useState(null);
+  const [favoritesOpen, setFavoritesOpen] = useState(false);
   
-  // Resets selection and expansion when nodes change (e.g., on import)
   useEffect(() => {
     if (nodes.length > 0) {
       const rootNode = nodes.find(n => !n.parentId);
       if (rootNode) {
-        setSelectedNodeId(rootNode.id);
-        setExpandedNodes([rootNode.id]);
+        if (!selectedNodeId || !nodes.find(n => n.id === selectedNodeId)) {
+            setSelectedNodeId(rootNode.id);
+        }
+        setExpandedNodes(prev => [...new Set([...prev, rootNode.id])]);
       }
     } else {
         setSelectedNodeId(null);
         setExpandedNodes([]);
     }
-  }, [nodes]);
+  }, [nodes, selectedNodeId]);
 
+  const filteredNodes = useMemo(() => {
+    if (!searchTerm.trim()) {
+        return nodes;
+    }
+    const lowercasedFilter = searchTerm.trim().toLowerCase();
+    const matchedNodes = nodes.filter(node =>
+        node.name.toLowerCase().includes(lowercasedFilter)
+    );
+    
+    const visibleIds = new Set();
+    matchedNodes.forEach(node => {
+        visibleIds.add(node.id);
+        const ancestors = getAncestors(node.id, nodes);
+        ancestors.forEach(id => visibleIds.add(id));
+    });
+    return nodes.filter(node => visibleIds.has(node.id));
+  }, [nodes, searchTerm]);
+
+  useEffect(() => {
+    if (searchTerm.trim()) {
+        setExpandedNodes(filteredNodes.map(n => n.id));
+    }
+  }, [searchTerm, filteredNodes]);
 
   const validationErrors = useMemo(() => {
     const errors = [];
@@ -383,17 +705,6 @@ function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, nodes, setNo
     return errors;
   }, [nodes, schema]);
   
-  const getAncestors = (nodeId, allNodes) => {
-    const ancestors = [];
-    let currentNode = allNodes.find(n => n.id === nodeId);
-    while (currentNode && currentNode.parentId) {
-      const parent = allNodes.find(n => n.id === currentNode.parentId);
-      if (parent) { ancestors.push(parent.id); currentNode = parent; } 
-      else { break; }
-    }
-    return ancestors;
-  };
-
   const addInstanceDetailsToTree = (nodesToProcess) => {
       return nodesToProcess.map(node => {
           const schemaNode = schema.nodes.find(sn => sn.id === node.schemaNodeId);
@@ -403,7 +714,7 @@ function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, nodes, setNo
       });
   };
 
-  const tree = useMemo(() => buildTree(nodes), [nodes]);
+  const tree = useMemo(() => buildTree(filteredNodes), [filteredNodes]);
   const detailedTree = useMemo(() => addInstanceDetailsToTree(tree), [tree, schema]);
 
   const handleAddChildClick = (parentId) => {
@@ -429,7 +740,7 @@ function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, nodes, setNo
           return;
       }
       const newId = `i_node_${Date.now()}`;
-      setNodes(prev => [...prev, { id: newId, parentId: selectedNodeId, schemaNodeId: childSchemaNodeId, name: childName }]);
+      setNodes(prev => [...prev, { id: newId, parentId: selectedNodeId, schemaNodeId: childSchemaNodeId, name: childName, content: {} }]);
       setExpandedNodes(prev => (prev.includes(selectedNodeId) ? prev : [...prev, selectedNodeId]));
       setDialogOpen(false);
   };
@@ -453,8 +764,12 @@ function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, nodes, setNo
   const handleSelect = id => setSelectedNodeId(id);
   const toggleExpand = id => setExpandedNodes(exp => exp.includes(id) ? exp.filter(x => x !== id) : [...exp, id]);
   const handleNodeNameChange = (id, newName) => setNodes(ns => ns.map(n => n.id === id ? { ...n, name: newName } : n));
+  const handleContentChange = (nodeId, fieldId, value) => {
+    setNodes(prevNodes => prevNodes.map(node => 
+        node.id === nodeId ? { ...node, content: { ...node.content, [fieldId]: value } } : node
+    ));
+  };
   
-  // List Management handlers
   const handleOpenListMenu = (event, node) => {
     setListMenuAnchorEl(event.currentTarget);
     setNodeForListMenu(node);
@@ -493,7 +808,7 @@ function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, nodes, setNo
     const exportData = {
         templateName: schema.templateName,
         instanceNodes: nodes,
-        schemaFavorites: favoriteNodeIds,
+        instanceFavorites: favoriteNodeIds,
         instanceLists: customLists,
         schemaUsed: schema
     };
@@ -524,26 +839,47 @@ function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, nodes, setNo
     reader.readAsText(file);
     event.target.value = null;
   };
+  
+  const handleToggleFavorite = (nodeId) => {
+    setFavoriteNodeIds(prev => prev.includes(nodeId) ? prev.filter(id => id !== nodeId) : [...prev, nodeId]);
+  };
+
+  const handleFavoriteSelect = (nodeId) => {
+    const ancestors = getAncestors(nodeId, nodes);
+    setExpandedNodes(prev => [...new Set([...prev, ...ancestors, nodeId])]);
+    setSelectedNodeId(nodeId);
+    setFavoritesOpen(false);
+  };
+
+  const selectedNodeType = useMemo(() => {
+    const selectedChildSchema = possibleChildren.find(c => c.id === childSchemaNodeId);
+    if (selectedChildSchema) {
+        return schema.nodeTypes.find(nt => nt.id === selectedChildSchema.typeId);
+    }
+    return null;
+  }, [possibleChildren, childSchemaNodeId, schema.nodeTypes]);
 
 
   function InstanceTreeNode({ node, level }) {
     const isSelected = node.id === selectedNodeId;
     const isExpanded = expandedNodes.includes(node.id);
+    const isFavorite = favoriteNodeIds.includes(node.id);
     const schemaNode = schema.nodes.find(sn => sn.id === node.schemaNodeId);
     const possibleChildSchemas = schema.nodes.filter(sn => sn.parentId === schemaNode?.id);
     const existingChildInstances = nodes.filter(i => i.parentId === node.id);
 
     return (
       <>
-        <ListItem sx={{ pl: 2 + level * 2, bgcolor: isSelected ? 'action.hover' : 'transparent', borderRadius: 1 }}>
-          <IconButton size="small" onClick={() => node.children.length && toggleExpand(node.id)}>
+        <ListItem onClick={() => handleSelect(node.id)} sx={{ pl: 2 + level * 2, bgcolor: isSelected ? 'action.hover' : 'transparent', borderRadius: 1 }}>
+          <IconButton size="small" onClick={(e) => { e.stopPropagation(); node.children.length && toggleExpand(node.id)}}>
             {node.children.length > 0 ? (isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />) : <Box sx={{width: 28}}/>}
           </IconButton>
           <Tooltip title={`Type: ${node.nodeTypeName}`}><Box sx={{ mr: 1, color: 'secondary.main' }}>{iconMap[node.icon]}</Box></Tooltip>
-          <TextField variant="standard" value={node.name} onChange={e => handleNodeNameChange(node.id, e.target.value)} sx={{ flexGrow: 1 }} />
+          <Typography noWrap sx={{flexGrow: 1}}>{node.name}</Typography>
+          <Tooltip title={isFavorite ? "Remove from Favorites" : "Add to Favorites"}><IconButton size="small" onClick={(e) => { e.stopPropagation(); handleToggleFavorite(node.id)}}>{isFavorite ? <StarIcon color="warning" /> : <StarBorderIcon />}</IconButton></Tooltip>
           <Tooltip title="Add to List"><IconButton size="small" onClick={(e) => handleOpenListMenu(e, node)}><PlaylistAddIcon /></IconButton></Tooltip>
-          <Tooltip title="Add Child Instance"><IconButton size="small" onClick={() => handleAddChildClick(node.id)}><AddCircleIcon color="primary"/></IconButton></Tooltip>
-          {node.parentId && (<Tooltip title="Delete Instance Node"><IconButton size="small" onClick={() => handleDeleteClick(node)}><DeleteIcon color="error" fontSize="small"/></IconButton></Tooltip>)}
+          <Tooltip title="Add Child Instance"><IconButton size="small" onClick={(e) => { e.stopPropagation(); handleAddChildClick(node.id)}}><AddCircleIcon color="primary"/></IconButton></Tooltip>
+          {node.parentId && (<Tooltip title="Delete Instance Node"><IconButton size="small" onClick={(e) => { e.stopPropagation(); handleDeleteClick(node)}}><DeleteIcon color="error" fontSize="small"/></IconButton></Tooltip>)}
         </ListItem>
         <Collapse in={isExpanded} timeout="auto">
           {showRequirements && possibleChildSchemas.length > 0 && (
@@ -570,31 +906,40 @@ function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, nodes, setNo
     );
   }
 
-  const selectedChildSchema = possibleChildren.find(c => c.id === childSchemaNodeId);
-  const selectedNodeType = selectedChildSchema ? schema.nodeTypes.find(nt => nt.id === selectedChildSchema.typeId) : null;
+  const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
   return (
-    <Paper sx={{ p: 2, m: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-        <Box>
-          <Typography variant="h5">Instance Creator</Typography>
-          <Typography variant="subtitle1" color="text.secondary">Based on Schema: "{schema.templateName}"</Typography>
+    <Box sx={{ display: 'flex', height: 'calc(100vh - 64px)'}}>
+        <Paper sx={{ p: 2, m: 2, width: '50%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexShrink: 0 }}>
+            <Box>
+            <Typography variant="h5">Instance Creator</Typography>
+            <Typography variant="subtitle1" color="text.secondary">Based on Schema: "{schema.templateName}"</Typography>
+            </Box>
+            <Box sx={{display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap'}}>
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="application/json" style={{ display: 'none' }} />
+                <Button size="small" variant="outlined" startIcon={<UploadFileIcon />} onClick={handleImportClick}>Import</Button>
+                <Button size="small" variant="outlined" startIcon={<FavoriteIcon />} onClick={() => setFavoritesOpen(true)} disabled={favoriteNodeIds.length === 0}>Favs ({favoriteNodeIds.length})</Button>
+                <Button size="small" variant="outlined" startIcon={<ViewListIcon />} onClick={() => setIsListDialogOpen(true)}>Lists</Button>
+                <Tooltip title="Show Validation Errors"><IconButton onClick={() => setErrorDialogOpen(true)} color="error"><Badge badgeContent={validationErrors.length} color="error"><WarningIcon /></Badge></IconButton></Tooltip>
+            </Box>
         </Box>
-        <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-            <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="application/json" style={{ display: 'none' }} />
-            <Button variant="outlined" startIcon={<UploadFileIcon />} onClick={handleImportClick}>Import Instance</Button>
-            <Button variant="outlined" startIcon={<ViewListIcon />} onClick={() => setIsListDialogOpen(true)}>Manage Lists</Button>
-            <FormControlLabel control={<Switch checked={showRequirements} onChange={() => setShowRequirements(prev => !prev)} />} label="Show Requirements" />
-            <Tooltip title="Show Validation Errors"><IconButton onClick={() => setErrorDialogOpen(true)} color="error"><Badge badgeContent={validationErrors.length} color="error"><WarningIcon /></Badge></IconButton></Tooltip>
+        <FormControlLabel control={<Switch size="small" checked={showRequirements} onChange={() => setShowRequirements(prev => !prev)} />} label="Show Requirements" sx={{flexShrink: 0}} />
+        <TextField label="Search Instance Nodes..." fullWidth value={searchTerm} onChange={e => setSearchTerm(e.target.value)} margin="normal" sx={{flexShrink: 0}} />
+        <Box sx={{ border: '1px solid #ddd', borderRadius: 1, flexGrow: 1, overflowY: 'auto', p: 1, my: 2 }}>
+            <List dense>{detailedTree.map(node => <InstanceTreeNode key={node.id} node={node} level={0} />)}</List>
         </Box>
-      </Box>
-      <Box sx={{ border: '1px solid #ddd', borderRadius: 1, minHeight: 300, p: 1, my: 2 }}>
-        <List dense>{detailedTree.map(node => <InstanceTreeNode key={node.id} node={node} level={0} />)}</List>
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={onBackToSchema}>Back to Schema</Button>
-        <Button variant="contained" color="secondary" startIcon={<SaveIcon />} onClick={handleExportInstance}>Export Instance</Button>
-      </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', flexShrink: 0 }}>
+            <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={onBackToSchema}>Back to Schema</Button>
+            <Button variant="contained" color="secondary" startIcon={<SaveIcon />} onClick={handleExportInstance}>Export Instance</Button>
+        </Box>
+        </Paper>
+        <ContentPanel 
+            node={selectedNode} 
+            schema={schema} 
+            onNodeNameChange={handleNodeNameChange}
+            onContentChange={handleContentChange}
+        />
 
       {/* Dialogs and Menus */}
       <Menu anchorEl={listMenuAnchorEl} open={Boolean(listMenuAnchorEl)} onClose={handleCloseListMenu}>
@@ -632,6 +977,14 @@ function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, nodes, setNo
         </DialogContent>
         <DialogActions><Button onClick={() => setIsListDialogOpen(false)}>Close</Button></DialogActions>
       </Dialog>
+      
+      <Dialog open={favoritesOpen} onClose={() => setFavoritesOpen(false)} fullWidth maxWidth="xs">
+        <DialogTitle>Favorite Nodes</DialogTitle>
+        <DialogContent dividers>
+            <List>{favoriteNodeIds.map(favId => { const favNode = nodes.find(n => n.id === favId); if (!favNode) return null; return (<ListItem button key={favId} onClick={() => handleFavoriteSelect(favId)}><ListItemText primary={favNode.name} /></ListItem>);})}</List>
+        </DialogContent>
+        <DialogActions><Button onClick={() => setFavoritesOpen(false)}>Close</Button></DialogActions>
+      </Dialog>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <DialogTitle>Add Instance Node</DialogTitle>
@@ -663,16 +1016,81 @@ function InstanceCreator({ schema, onBackToSchema, favoriteNodeIds, nodes, setNo
         <DialogContent><Typography>Are you sure you want to delete the instance "<strong>{nodeToDelete?.name}</strong>"? This will also delete all its children.</Typography></DialogContent>
         <DialogActions><Button onClick={() => setConfirmOpen(false)}>Cancel</Button><Button onClick={handleDeleteConfirm} variant="contained" color="error">Delete</Button></DialogActions>
       </Dialog>
-    </Paper>
+    </Box>
   );
+}
+
+function ContentPanel({ node, schema, onNodeNameChange, onContentChange }) {
+    if (!node) {
+        return (
+            <Paper sx={{ p: 2, m: 2, width: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography color="text.secondary">Select a node to see its content</Typography>
+            </Paper>
+        );
+    }
+
+    const schemaNode = schema.nodes.find(sn => sn.id === node.schemaNodeId);
+    const nodeType = schema.nodeTypes.find(nt => nt.id === schemaNode?.typeId);
+
+    const renderField = (field) => {
+        const value = node.content?.[field.id] || '';
+
+        // For file/image, we'd store an array of objects with URL, name, etc.
+        // For simplicity, we'll just show a placeholder.
+        if (field.type === 'file' || field.type === 'image') {
+            const count = Array.isArray(value) ? value.length : 0;
+            return (
+                <Box key={field.id}>
+                    <Typography gutterBottom>{field.name} ({count} / {field.maxCount ?? '*'})</Typography>
+                    <Button variant="outlined" startIcon={<UploadFileIcon />}>Upload {field.type}</Button>
+                    <Typography variant="caption" display="block" color="text.secondary">
+                        (Upload functionality is a placeholder)
+                    </Typography>
+                </Box>
+            )
+        }
+        
+        return (
+            <TextField
+                key={field.id}
+                label={field.name}
+                fullWidth
+                multiline={field.type === 'textarea'}
+                rows={field.type === 'textarea' ? 4 : 1}
+                value={value}
+                onChange={(e) => onContentChange(node.id, field.id, e.target.value)}
+                margin="normal"
+                required={field.required}
+            />
+        );
+    }
+    
+    return (
+        <Paper sx={{ p: 2, m: 2, width: '50%', overflowY: 'auto' }}>
+            <Typography variant="h6">Content Editor</Typography>
+            <Typography variant="body1" color="text.secondary" gutterBottom>Editing: {node.name}</Typography>
+            <Divider sx={{my: 2}} />
+            <TextField
+                label="Node Name (Display Label)"
+                fullWidth
+                value={node.name}
+                onChange={(e) => onNodeNameChange(node.id, e.target.value)}
+                margin="normal"
+            />
+            {nodeType?.fields?.map(field => renderField(field))}
+            {!nodeType?.fields || nodeType.fields.length === 0 && (
+                <Typography color="text.secondary" sx={{mt: 2}}>This node type has no custom content fields defined.</Typography>
+            )}
+        </Paper>
+    );
 }
 
 // --- TEMPLATE MANAGER (New Sidebar Component) ---
 
 function TemplateManager({ onSchemaChange, currentSchema }) {
   const [templates, setTemplates] = useState([]);
-  const [isNodeTypeDialogOpen, setIsNodeTypeDialogOpen] = useState(false);
-  const [nodeTypeData, setNodeTypeData] = useState(null); // Used for both add and edit
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editingNodeType, setEditingNodeType] = useState(null);
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -702,47 +1120,29 @@ function TemplateManager({ onSchemaChange, currentSchema }) {
   };
 
   const handleOpenAddNodeType = () => {
-    setNodeTypeData({ name: '', icon: 'Default', description: '' }); // No ID means it's a new node
-    setIsNodeTypeDialogOpen(true);
+    setEditingNodeType(null);
+    setIsEditorOpen(true);
   };
 
   const handleOpenEditNodeType = (nodeType) => {
-    setNodeTypeData({ ...nodeType }); // Pre-fill with existing data for editing
-    setIsNodeTypeDialogOpen(true);
+    setEditingNodeType(nodeType);
+    setIsEditorOpen(true);
   };
-
-  const handleCloseNodeTypeDialog = () => {
-    setIsNodeTypeDialogOpen(false);
-    setNodeTypeData(null);
-  };
-
-  const handleSaveNodeType = () => {
-    if (!nodeTypeData || !nodeTypeData.name.trim()) {
-        alert("Node type name cannot be empty.");
-        return;
-    }
-    
+  
+  const handleSaveNodeType = (savedNodeType) => {
     let updatedNodeTypes;
-    if (nodeTypeData.id) { // If ID exists, it's an edit
-        updatedNodeTypes = currentSchema.nodeTypes.map(nt =>
-            nt.id === nodeTypeData.id ? nodeTypeData : nt
-        );
-    } else { // No ID, so it's a new node
-        const newNodeType = {
-            ...nodeTypeData,
-            id: `nt_${Date.now()}`
-        };
-        updatedNodeTypes = [...currentSchema.nodeTypes, newNodeType];
+    if (currentSchema.nodeTypes.some(nt => nt.id === savedNodeType.id)) {
+        updatedNodeTypes = currentSchema.nodeTypes.map(nt => nt.id === savedNodeType.id ? savedNodeType : nt );
+    } else {
+        updatedNodeTypes = [...currentSchema.nodeTypes, savedNodeType];
     }
-
     onSchemaChange({ ...currentSchema, nodeTypes: updatedNodeTypes });
-    handleCloseNodeTypeDialog();
+    setIsEditorOpen(false);
   };
   
   const handleDeleteNodeType = (typeId) => {
     if (currentSchema.nodes.some(n => n.typeId === typeId)) {
-        alert("Cannot delete node type. It is currently being used in the schema.");
-        return;
+        alert("Cannot delete node type. It is currently being used in the schema."); return;
     }
     onSchemaChange({ ...currentSchema, nodeTypes: currentSchema.nodeTypes.filter(nt => nt.id !== typeId) });
   };
@@ -776,48 +1176,14 @@ function TemplateManager({ onSchemaChange, currentSchema }) {
         <Button variant="outlined" size="small" fullWidth onClick={handleOpenAddNodeType} sx={{mt: 1}}>Add New Type</Button>
       </Box>
 
-      {/* Unified Dialog for Adding/Editing Node Types */}
-      <Dialog open={isNodeTypeDialogOpen} onClose={handleCloseNodeTypeDialog}>
-        <DialogTitle>{nodeTypeData?.id ? 'Edit Node Type' : 'Add New Type'}</DialogTitle>
-        <DialogContent>
-            <TextField
-                autoFocus
-                margin="dense"
-                label="Type Name"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={nodeTypeData?.name || ''}
-                onChange={e => setNodeTypeData(prev => ({...prev, name: e.target.value}))}
-                sx={{mt: 2}}
-            />
-            <TextField
-                margin="dense"
-                label="Description"
-                type="text"
-                fullWidth
-                variant="outlined"
-                multiline
-                rows={3}
-                value={nodeTypeData?.description || ''}
-                onChange={e => setNodeTypeData(prev => ({...prev, description: e.target.value}))}
-            />
-            <FormControl fullWidth margin="dense">
-                <InputLabel>Icon</InputLabel>
-                <Select
-                    value={nodeTypeData?.icon || 'Default'}
-                    label="Icon"
-                    onChange={e => setNodeTypeData(prev => ({...prev, icon: e.target.value}))}
-                >
-                    {Object.keys(iconMap).map(iconName => (<MenuItem key={iconName} value={iconName}>{iconName}</MenuItem>))}
-                </Select>
-            </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseNodeTypeDialog}>Cancel</Button>
-          <Button onClick={handleSaveNodeType} variant="contained">Save</Button>
-        </DialogActions>
-      </Dialog>
+      {isEditorOpen && 
+        <NodeTypeEditor
+            isOpen={isEditorOpen}
+            nodeType={editingNodeType}
+            onClose={() => setIsEditorOpen(false)}
+            onSave={handleSaveNodeType}
+        />
+      }
     </Box>
   );
 }
@@ -829,7 +1195,7 @@ export default function App() {
   const [mode, setMode] = useState('schema');
   const [schema, setSchema] = useState({
     templateName: 'New Template',
-    nodeTypes: [ { id: 'nt_1', name: 'Default Node', icon: 'Article', description: 'A default node type.' } ],
+    nodeTypes: [ { id: 'nt_1', name: 'Default Node', icon: 'Article', description: 'A default node type.', fields: [] } ],
     nodes: [ { id: 's_node_root', parentId: null, typeId: 'nt_1', name: 'Root', minCount: 1, maxCount: 1 } ],
   });
   const [isDrawerOpen, setDrawerOpen] = useState(true);
@@ -853,19 +1219,21 @@ export default function App() {
               schemaNodeId: rootSchemaNode.id,
               parentId: null,
               name: rootSchemaNode.name,
+              content: {},
           };
           setInstanceNodes([rootInstanceNode]);
       } else {
           setInstanceNodes([]);
       }
       setInstanceLists({});
+      setFavoriteNodeIds([]);
       setMode('instance');
   };
 
   const handleImportInstance = (data) => {
-      if(data.schemaUsed && data.instanceNodes && data.schemaFavorites && data.instanceLists) {
+      if(data.schemaUsed && data.instanceNodes && data.instanceFavorites && data.instanceLists) {
         setSchema(data.schemaUsed);
-        setFavoriteNodeIds(data.schemaFavorites);
+        setFavoriteNodeIds(data.instanceFavorites);
         setInstanceNodes(data.instanceNodes);
         setInstanceLists(data.instanceLists);
         setMode('instance');
@@ -897,14 +1265,13 @@ export default function App() {
             initialSchema={schema} 
             onSaveSchema={handleSchemaChange} 
             onBuildInstance={handleBuildInstance}
-            favoriteNodeIds={favoriteNodeIds}
-            onFavoritesChange={setFavoriteNodeIds}
           />
         ) : (
           <InstanceCreator 
             schema={schema} 
             onBackToSchema={() => setMode('schema')}
             favoriteNodeIds={favoriteNodeIds}
+            setFavoriteNodeIds={setFavoriteNodeIds}
             nodes={instanceNodes}
             setNodes={setInstanceNodes}
             customLists={instanceLists}
