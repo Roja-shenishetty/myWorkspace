@@ -1,6 +1,5 @@
 // src/tool.config.js
 import React from 'react';
-import RunbookEditorIcon from '../../components/icons/RunbookEditorIcon';
 import TerminalPlayIcon from '../../components/icons/TerminalPlayIcon'
 import DeviceToolbarIcon from '../../components/icons/ToggleDeviceIcon';
 import WidgetsIcon from '@mui/icons-material/Widgets';
@@ -46,7 +45,7 @@ export const features = [
   },
     {
     id: 'hirementor',
-    logoUrl: 'public/06_iLearn_HireAMentor_Monitor.png',
+    logoUrl: '06_iLearn_HireAMentor_Monitor.png',
     title: 'Hire a mentor',
     description: '"Unlock your potential with one-on-one mentorship.."',
     slink:"/features/hirementor"

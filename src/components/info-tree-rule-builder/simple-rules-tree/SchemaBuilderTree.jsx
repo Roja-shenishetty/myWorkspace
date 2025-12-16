@@ -44,6 +44,7 @@ import {
   Settings as SettingsIcon,
   Book as BookIcon
 } from '@mui/icons-material';
+import TemplatesDashboard from '../../../views/templates-dashboard/TemplatesDashboard';
 
 // --- SHARED UTILITIES & COMPONENTS ---
 
@@ -1259,6 +1260,8 @@ export default function App() {
             <Chip icon={mode === 'schema' ? <BuildIcon /> : <CheckCircleIcon />} label={mode === 'schema' ? 'Mode: Designing Schema' : 'Mode: Creating Instance'} color={mode === 'schema' ? 'primary' : 'success'} variant="filled" />
           </Toolbar>
         </AppBar>
+
+        <TemplatesDashboard></TemplatesDashboard>
         
         {mode === 'schema' ? (
           <SchemaBuilder 

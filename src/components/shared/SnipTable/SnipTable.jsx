@@ -8,7 +8,6 @@ import { DataGrid } from '@mui/x-data-grid';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import imageCompression from 'browser-image-compression';
-import { createClient } from '@supabase/supabase-js';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 
@@ -22,12 +21,6 @@ import 'highlight.js/styles/github.css';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import LoginPage from '../pages/LoginPage';
 import { useUser } from '../context/UserContext';
-
-const supabase = createClient(
-    'https://cogdxirzlnbkiipnzeta.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNvZ2R4aXJ6bG5ia2lpcG56ZXRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyOTA1NjcsImV4cCI6MjA2Mjg2NjU2N30.K3vlWrcipuoiCAGUTldeAe0pqEsCyM6v2xAbFtTSrTM'
-);
-
 
 
 function detectLanguage(text) {

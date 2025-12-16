@@ -22,7 +22,7 @@ export default function TopBar() {
         <div className="w-full px-5 lg:pl-10 flex justify-between h-[var(--header-height)] gap-3">
           {/* Left: Logo + Primary Nav */}
           <div className="hidden lg:flex h-full items-center justify-center gap-2">
-            <LogoLink />
+            <LogoLink imageFileName="/app-logo.svg"/>
             <div className="flex relative gap-2 justify-start items-end w-full h-full">
               <PrimaryNav items={NAV_ITEMS} />
             </div>
@@ -31,7 +31,7 @@ export default function TopBar() {
           {/* Middle/Right: mobile logo + search + hamburger */}
           <div className="w-full grow lg:w-auto flex gap-3 justify-between lg:justify-end items-center h-full">
             <div className="lg:hidden">
-              <LogoLink />
+              <LogoLink imageFileName="/app-logo.svg"/>
             </div>
             <div className="flex gap-2 items-center">
               {/* <SearchButton /> */}

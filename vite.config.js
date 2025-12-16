@@ -1,12 +1,12 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import { VitePWA } from 'vite-plugin-pwa';
-import tailwindcss from '@tailwindcss/vite';   // Import Tailwind's Vite plugin
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
@@ -27,7 +27,8 @@ export default defineConfig({
   resolve: {
   alias: {
     '@shared': '/src/components/shared',
-    '@components': '/src/components'
+    '@components': '/src/components',
+     
   }
 }
 });

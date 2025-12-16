@@ -2,7 +2,7 @@
    Small, focused atoms
    ======================= */
 
-export default function LogoLink({imageFileName='app-logo.svg', linkUrl="/"}, appName='iLearn') {
+export default function LogoLink({imageFileName='/app-logo.svg', linkUrl="/", appName='iLearn'}) {
   return (
     <a
       href={linkUrl}

@@ -1,9 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
-
-import './App.css'
-import RunbookEditor from "./components/runbookeditor/RunBookEditor";
-import RunbookEditorApp from "./components/runbookeditor/RunbookEditorApp";
+import RunBookEditor from "./components/runbookeditor/RunBookEditor";
 
 import CSSExtractor from "./pages/CSSExtractor"
 import { Box } from '@mui/material'
@@ -18,6 +15,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MobileLayoutNotched from "./layouts/MobileLayout";
 import { useMediaQuery, useTheme } from "@mui/material";
+import EventRoutes from './views/organize-events/EventRoutes';
 import  SimpleRulesTreeBuilderMain from "./components/info-tree-rule-builder/simple-rules-tree/SimpleRulesTreeBuilderMain"
 function App() {
 
@@ -38,9 +36,8 @@ const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // or "md"
               <Route index element={<HomePage />} />
               {/* Map your app pages here */}
               <Route path="/tools/cssextract" element={<CSSExtractor />} />
-              <Route path="/tools/runbookeditor" element={<RunbookEditor />} />
+          
                <Route path="/tools/infotreeeditor" element={<SimpleRulesTreeBuilderMain />} />
-              <Route path="/tools/runbookmultieditor" element={<RunbookEditorApp />} />
               <Route path="/tools/markdowneditor" element={<MarkdownEditor />} />
               <Route path="/tools/markdownsimple" element={<MarkdownSimple></MarkdownSimple>} />
               <Route path="/tools/responsiveviewer" element={<ResponsiveViewer></ResponsiveViewer>} />
@@ -49,7 +46,10 @@ const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // or "md"
               <Route path="/start" element={<StartPage>ddd</StartPage>} />
               {/* Catch-all 404 */}
               <Route path="*" element={<div className="p-6">Not Found</div>} />
+
+                <Route path="/events/*" element={<EventRoutes />} /> 
             </Route>
+            <Route path="/tools/runbookeditor" element={<RunBookEditor />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>

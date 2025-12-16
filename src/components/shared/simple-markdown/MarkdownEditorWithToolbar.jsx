@@ -14,8 +14,9 @@ const MarkdownEditorWithToolbar = ({content="### Heading", onChange}) => {
 
 //console.log("content is....",value)
   return (
-    <div className="md-editor-wrapper markdown-container" data-color-mode="light" >
-      <MDEditor value={value} onChange={setValue} />
+    <div style={{height:500}} className="md-editor-wrapper markdown-container" 
+     data-color-mode="light" >
+      <MDEditor height={500} value={value} onChange={setValue} />
 
     </div>
   );

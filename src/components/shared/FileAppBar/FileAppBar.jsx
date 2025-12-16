@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Paper, Box } from "@mui/material";
+import { Paper, Box } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
@@ -12,6 +12,8 @@ import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/Info";
 import SaveIcon from "@mui/icons-material/Save";
 import FolderOpenIcon from "@mui/icons-material/FolderOpen";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 // Example metadata state
 const initialMetadata = {
@@ -21,7 +23,7 @@ const initialMetadata = {
     filename: "runbook"
 };
 
-export default function FileAppBar({ onOpenFile, onSaveFile, offset, currentFileName }) {
+export default function FileAppBar({ onOpenFile, onSaveFile, offset, currentFileName, setHideUI, hideUI }) {
     const [metadata, setMetadata] = useState(initialMetadata);
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -48,27 +50,13 @@ export default function FileAppBar({ onOpenFile, onSaveFile, offset, currentFile
         handleMetadataClose();
     };
 
-    const fileInputRef = React.useRef(null);
-
-const handleFileIconClick = () => {
-  if (fileInputRef.current) {
-    fileInputRef.current.click();
-  }
-};
-
-const handleFileChange = (event) => {
-  if (event.target.files && event.target.files[0]) {
-    onOpenFile && onOpenFile(event.target.files);
-  }
-};
-
-
+    
     return (
         <>
-            <Paper elevation={2} sx={{position:"fixed", width:"100%", zIndex:2, top: offset }}>
+            <Paper elevation={2} sx={{ position: "fixed", width: "100%", zIndex: 2, top: offset }}>
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                        {currentFileName ? `Runbook: ${currentFileName}` : 'Runbook Editor'}
+                        {currentFileName ? `${currentFileName}` : 'Runbook Editor'}
                     </Typography>
 
                     <Tooltip title="Open File">
@@ -86,6 +74,11 @@ const handleFileChange = (event) => {
                             <InfoIcon />
                         </IconButton>
                     </Tooltip>
+
+                 
+                    <IconButton onClick={() => setHideUI(!hideUI)}>
+                        {hideUI ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                    </IconButton>
                 </Toolbar>
             </Paper>
             <Popover

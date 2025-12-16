@@ -180,13 +180,14 @@ const loadRecentFiles = () => {
 
 
 
-export default function RunbookEditor() {
+export default function RunBookEditor() {
     const [sections, setSections] = useState(getInitialSections);
     const [recentFiles, setRecentFiles] = useState(loadRecentFiles);
     const [tab, setTab] = useState(0);
     const sectionRefs = useRef([]);
     const [currentFileName, setCurrentFileName] = useState("runbook.json");
-
+    // Example in Parent Component
+    const [hideUI, setHideUI] = useState(false);
     const [selectedTabs, setSelectedTabs] = useState({
         code: {},  // sectionId -> selected code tab index
         media: {}  // sectionId -> selected media tab index
@@ -461,95 +462,95 @@ export default function RunbookEditor() {
         alert(`Section "${sectionToCopy.title}" copied! You can now paste it in another window.`);
     };
 
-const handlePasteSection = (targetSectionId = null) => {
-  try {
-    const copied = localStorage.getItem("copiedSection");
-    if (!copied) {
-      alert("No copied section found.");
-      return;
-    }
-    const sectionToPaste = JSON.parse(copied);
+    const handlePasteSection = (targetSectionId = null) => {
+        try {
+            const copied = localStorage.getItem("copiedSection");
+            if (!copied) {
+                alert("No copied section found.");
+                return;
+            }
+            const sectionToPaste = JSON.parse(copied);
 
-    // Generate new IDs for copy and nested items
-    sectionToPaste.id = uuidv4();
-    if (sectionToPaste.codeFiles) {
-      sectionToPaste.codeFiles = sectionToPaste.codeFiles.map((f) => ({ ...f, id: uuidv4() }));
-    }
-    if (sectionToPaste.mediaFiles) {
-      sectionToPaste.mediaFiles = sectionToPaste.mediaFiles.map((m) => ({ ...m, id: uuidv4() }));
-    }
+            // Generate new IDs for copy and nested items
+            sectionToPaste.id = uuidv4();
+            if (sectionToPaste.codeFiles) {
+                sectionToPaste.codeFiles = sectionToPaste.codeFiles.map((f) => ({ ...f, id: uuidv4() }));
+            }
+            if (sectionToPaste.mediaFiles) {
+                sectionToPaste.mediaFiles = sectionToPaste.mediaFiles.map((m) => ({ ...m, id: uuidv4() }));
+            }
 
-    setSections((prev) => {
-      if (!targetSectionId) {
-        // If no target, append at end
-        const result = [...prev, sectionToPaste];
-        return result.map((section, i) => ({ ...section, order: i + 1 }));
-      }
+            setSections((prev) => {
+                if (!targetSectionId) {
+                    // If no target, append at end
+                    const result = [...prev, sectionToPaste];
+                    return result.map((section, i) => ({ ...section, order: i + 1 }));
+                }
 
-      const index = prev.findIndex((s) => s.id === targetSectionId);
-      if (index === -1) {
-        // Target not found, append at end
-        const result = [...prev, sectionToPaste];
-        return result.map((section, i) => ({ ...section, order: i + 1 }));
-      }
+                const index = prev.findIndex((s) => s.id === targetSectionId);
+                if (index === -1) {
+                    // Target not found, append at end
+                    const result = [...prev, sectionToPaste];
+                    return result.map((section, i) => ({ ...section, order: i + 1 }));
+                }
 
-      // Insert pasted section right after target index
-      const result = [
-        ...prev.slice(0, index + 1),
-        sectionToPaste,
-        ...prev.slice(index + 1),
-      ];
+                // Insert pasted section right after target index
+                const result = [
+                    ...prev.slice(0, index + 1),
+                    sectionToPaste,
+                    ...prev.slice(index + 1),
+                ];
 
-      // Recalculate orders properly
-      return result.map((section, i) => ({ ...section, order: i + 1 }));
-    });
-  } catch (e) {
-    alert("Failed to paste section.");
-  }
-};
+                // Recalculate orders properly
+                return result.map((section, i) => ({ ...section, order: i + 1 }));
+            });
+        } catch (e) {
+            alert("Failed to paste section.");
+        }
+    };
 
 
-const duplicateSection = (sectionId) => {
-  setSections((prevSections) => {
-    const index = prevSections.findIndex((s) => s.id === sectionId);
-    if (index === -1) return prevSections;
+    const duplicateSection = (sectionId) => {
+        setSections((prevSections) => {
+            const index = prevSections.findIndex((s) => s.id === sectionId);
+            if (index === -1) return prevSections;
 
-    const original = prevSections[index];
+            const original = prevSections[index];
 
-    // Deep clone original section
-    const copy = JSON.parse(JSON.stringify(original));
+            // Deep clone original section
+            const copy = JSON.parse(JSON.stringify(original));
 
-    // Generate new IDs for the copy and nested items
-    copy.id = uuidv4();
-    copy.order = original.order + 1; // new order right after original
+            // Generate new IDs for the copy and nested items
+            copy.id = uuidv4();
+            copy.order = original.order + 1; // new order right after original
 
-    if (copy.codeFiles) {
-      copy.codeFiles = copy.codeFiles.map((f) => ({
-        ...f,
-        id: uuidv4(),
-      }));
-    }
-    if (copy.mediaFiles) {
-      copy.mediaFiles = copy.mediaFiles.map((m) => ({
-        ...m,
-        id: uuidv4(),
-      }));
-    }
+            if (copy.codeFiles) {
+                copy.codeFiles = copy.codeFiles.map((f) => ({
+                    ...f,
+                    id: uuidv4(),
+                }));
+            }
+            if (copy.mediaFiles) {
+                copy.mediaFiles = copy.mediaFiles.map((m) => ({
+                    ...m,
+                    id: uuidv4(),
+                }));
+            }
 
-    // Insert copy after original
-    const updated = [
-      ...prevSections.slice(0, index + 1),
-      copy,
-      ...prevSections.slice(index + 1),
-    ];
+            // Insert copy after original
+            const updated = [
+                ...prevSections.slice(0, index + 1),
+                copy,
+                ...prevSections.slice(index + 1),
+            ];
 
-    // Fix order for all sections (increment orders after inserted position)
-    return updated.map((section, i) => ({
-      ...section,
-      order: i + 1,
-    }));
-  });
-};
+            // Fix order for all sections (increment orders after inserted position)
+            return updated.map((section, i) => ({
+                ...section,
+                order: i + 1,
+            }));
+        });
+    };
 
     // Add new empty code file
     const handleAddCodeFile = (sectionId) => {
@@ -667,20 +668,84 @@ const duplicateSection = (sectionId) => {
     return (
         <div className="flex min-h-screen items-center flex-col h-full w-full bg-gray-100">
 
-            <FileAppBar offset={37} currentFileName={currentFileName} onOpenFile={handleOpenFile} onSaveFile={() => handleSaveSectionsJSON(sections)}></FileAppBar>
-            <Box sx={{ height: 64 }} /> {/* Spacer to offset fixed header */}
+            <FileAppBar offset={0} setHideUI={setHideUI} hideUI={hideUI} currentFileName={currentFileName} onOpenFile={handleOpenFile} onSaveFile={() => handleSaveSectionsJSON(sections)}></FileAppBar>
+            <Box sx={{ height: 64, display: hideUI ? "none" : "block" }} /> {/* Spacer to offset fixed header */}
+            <Box display={"flex"}
+                sx={{
+                    width: "95%",
+                    // display: "flex",
+                    position: "fixed",
+                    gap: 2,
+                    mb: 2,
+                    mt: "55px",
+                    overflowX: "auto",      // Allows scrolling on X-axis
+                    pb: 1,                  // Padding bottom for scrollbar spacing
+                    "&::-webkit-scrollbar": { display: "none" }, // Optional: Hides scrollbar for cleaner look
+                    "& > *": {              // Selects all direct children (buttons)
+                        flexShrink: 0       // Forces them to keep their original width
+                    },
+                    backgroundColor: "white",
+                    zIndex: 100,
+                    display: hideUI ? "none" : "flex"
 
+                }}>
+                <input
+                    type="file"
+                    accept="application/json"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    id="import-sections-json"
+                    onChange={handleLoadSectionsJSON}
+                />
+                <label htmlFor="import-sections-json">
+                    <Fab component="span" color="primary">
+
+                        <FolderOpenIcon />
+                    </Fab>
+                </label>
+
+                <Fab
+                    color="primary"
+                    aria-label="add"
+                    onClick={handleSaveFile}
+                >
+                    <SaveIcon />
+                </Fab>
+
+                {/* Just add the FavouritesPopup component here */}
+                <FavouritesPopup onFileSelect={handleFavouriteSelect} defaultFavouritesUrl={defaultFavouritesUrl} />
+                <Fab
+                    color="primary"
+                    aria-label="preview"
+                    onClick={handleShowPreview}
+                >
+                    <VisibilityIcon fontSize="medium" />
+
+                </Fab>
+                <Fab
+                    color="primary"
+                    aria-label="add"
+                    onClick={handleShowEdit}
+                >
+                    <EditIcon fontSize="medium" />
+                </Fab>
+
+                <ScreenRecorderFab position="static"></ScreenRecorderFab>
+                <YouTubeUploaderFab>ddd</YouTubeUploaderFab>
+                <ClearLocalStorageWithConfirm onClear={handleClearLocal} />
+                <RecentFilesPopup recentFiles={recentFiles} onFileLoad={handleLoadRecentFile} onUpdateRecentFiles={updateRecentFiles} />
+            </Box>
             <Container
                 sx={{
                     maxWidth: "1000px",
-                    width: "100%",
+                    width: "97%",
                     mx: "auto",
-                    py: 4,
-                    px: { xs: 2, sm: 3 }, // Add some horizontal padding
+                    py: 2,
+                    px: { xs: 1, sm: 2 }, // Add some horizontal padding
                     background: "#fff",
                     borderRadius: 2,
                     boxShadow: 2,
-                    mt: 4,
+                    mt: 1,
                     minHeight: "88vh",
                     display: "flex",
                     flexDirection: "column",
@@ -692,58 +757,10 @@ const duplicateSection = (sectionId) => {
             >
 
 
-
-                <Box display={"flex"} sx={{ display: "flex", gap: 2, mb: 2 }}>
-                    <input
-                        type="file"
-                        accept="application/json"
-                        ref={fileInputRef}
-                        style={{ display: 'none' }}
-                        id="import-sections-json"
-                        onChange={handleLoadSectionsJSON}
-                    />
-                    <label htmlFor="import-sections-json">
-                        <Fab component="span" color="primary">
-
-                            <FolderOpenIcon />
-                        </Fab>
-                    </label>
-
-                    <Fab
-                        color="primary"
-                        aria-label="add"
-                        onClick={handleSaveFile}
-                    >
-                        <SaveIcon />
-                    </Fab>
-
-                    {/* Just add the FavouritesPopup component here */}
-                    <FavouritesPopup onFileSelect={handleFavouriteSelect} defaultFavouritesUrl={defaultFavouritesUrl} />
-                    <Fab
-                        color="primary"
-                        aria-label="preview"
-                        onClick={handleShowPreview}
-                    >
-                        <VisibilityIcon fontSize="medium" />
-
-                    </Fab>
-                    <Fab
-                        color="primary"
-                        aria-label="add"
-                        onClick={handleShowEdit}
-                    >
-                        <EditIcon fontSize="medium" />
-                    </Fab>
-
-                    <ScreenRecorderFab position="static"></ScreenRecorderFab>
-                    <YouTubeUploaderFab>ddd</YouTubeUploaderFab>
-                    <ClearLocalStorageWithConfirm onClear={handleClearLocal} />
-                    <RecentFilesPopup recentFiles={recentFiles} onFileLoad={handleLoadRecentFile} onUpdateRecentFiles={updateRecentFiles} />
-                </Box>
-
                 {tab === 0 && (
-                    <>
-                        <EditorTimeLine
+                    <Box sx={{ width: "100%" }}>
+                        <EditorTimeLine sx={{ width: "95%" }}
+                            hideUI={hideUI} // <--- Pass the prop here
                             sections={sections}
                             sectionRefs={sectionRefs}
                             handleCloneSection={handleCloneSection}
@@ -778,8 +795,9 @@ const duplicateSection = (sectionId) => {
                             onClick={handleAddSection}
                             sx={{
                                 position: "fixed",
-                                bottom: 94,
-                                right: 32
+                                bottom: 98,
+                                right: 32,
+                                display: hideUI ? "none" : "block"
                             }}
                         >
                             <AddIcon />
@@ -790,14 +808,17 @@ const duplicateSection = (sectionId) => {
                             onClick={handleShowPreview}
                             sx={{
                                 position: "fixed",
-                                bottom: 154,
-                                right: 32
+                                bottom: 32,
+                                right: 32,
+                                display: hideUI ? "none" : "block"
+
+
                             }}
                         >
                             <VisibilityIcon fontSize="medium" />
 
                         </Fab>
-                        <Fab
+                        {/* <Fab
                             color="secondary"
                             aria-label="scroll-bottom"
                             onClick={handleScrollBottom}
@@ -809,11 +830,7 @@ const duplicateSection = (sectionId) => {
                             }}
                         >
                             <KeyboardArrowDownIcon />
-                        </Fab>
-
-
-
-
+                        </Fab> */}
 
                         {/* Left buttons */}
                         <Fab
@@ -825,6 +842,8 @@ const duplicateSection = (sectionId) => {
                                 bottom: 100,
                                 left: 32,
                                 zIndex: 9999,
+                                display: hideUI ? "none" : "block"
+
                             }}
                         >
                             <KeyboardArrowUpIcon />
@@ -839,11 +858,12 @@ const duplicateSection = (sectionId) => {
                                 bottom: 32,
                                 left: 32,
                                 zIndex: 9999,
+                                display: hideUI ? "none" : "block"
                             }}
                         >
                             <KeyboardArrowDownIcon />
                         </Fab>
-                    </>
+                    </Box>
                 )}
 
                 {tab === 1 &&
@@ -857,7 +877,8 @@ const duplicateSection = (sectionId) => {
                             sx={{
                                 position: "fixed",
                                 bottom: 94,
-                                right: 32
+                                right: 32,
+                                display: hideUI ? "none" : "block"
                             }}
                         >
                             <SaveIcon />
@@ -869,14 +890,15 @@ const duplicateSection = (sectionId) => {
                             onClick={handleShowEdit}
                             sx={{
                                 position: "fixed",
-                                bottom: 160,
-                                right: 32
+                                bottom: 32,
+                                right: 32,
+                                display: hideUI ? "none" : "block"
                             }}
                         >
                             <EditIcon fontSize="medium" />
 
                         </Fab>
-                        <Fab
+                        {/* <Fab
                             color="secondary"
                             aria-label="scroll-bottom"
                             onClick={handleScrollBottom}
@@ -888,7 +910,7 @@ const duplicateSection = (sectionId) => {
                             }}
                         >
                             <KeyboardArrowDownIcon />
-                        </Fab>
+                        </Fab> */}
 
                         {/*left side buttons */}
                         <Fab
@@ -900,6 +922,7 @@ const duplicateSection = (sectionId) => {
                                 bottom: 100,
                                 left: 32,
                                 zIndex: 9999,
+                                display: hideUI ? "none" : "block"
                             }}
                         >
                             <KeyboardArrowUpIcon />
@@ -914,6 +937,7 @@ const duplicateSection = (sectionId) => {
                                 bottom: 32,
                                 left: 32,
                                 zIndex: 9999,
+                                display: hideUI ? "none" : "block"
                             }}
                         >
                             <KeyboardArrowDownIcon />
@@ -923,6 +947,6 @@ const duplicateSection = (sectionId) => {
 
             </Container>
 
-        </div>
+        </div >
     );
 }

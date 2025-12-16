@@ -42,7 +42,6 @@ export default function FavouritesPopup({ defaultFavouritesUrl, showPreviewMode,
   // This function is passed to the tree, so it can send data back up
   const handleNodeSelect = (node) => {
     if (node.url && typeof onFileSelect === 'function') {
-      onFileSelect(node.url, node.name); // Send data to RunbookEditor
       handleClose(); // Close the popup after selection
     }
   };
