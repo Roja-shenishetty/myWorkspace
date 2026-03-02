@@ -13,7 +13,7 @@ import {
     Link,
     Tooltip,
     Button,
-    TextField,
+    TextField
 } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -27,7 +27,8 @@ function formatDateTime(dateString) {
     return d.toLocaleString();
 }
 
-export default function RecentFilesPopup({ recentFiles, onFileLoad, onUpdateRecentFiles }) {
+export default function RecentFilesPopup({ recentFiles = [], onFileLoad, onUpdateRecentFiles }) {
+   
     const [anchorEl, setAnchorEl] = useState(null);
     const [infoAnchorEl, setInfoAnchorEl] = useState(null);
     const [currentInfoFile, setCurrentInfoFile] = useState(null);
@@ -107,14 +108,29 @@ export default function RecentFilesPopup({ recentFiles, onFileLoad, onUpdateRece
 
     return (
         <>
-            <Fab
-                color="primary"
-                aria-label="recent files"
-                onClick={handleClick}
-            >
-                <HistoryIcon />
-            </Fab>
-
+            <Tooltip title="Recent Files" arrow><Fab
+  aria-label="recent files"
+  onClick={handleClick}
+  sx={{
+    width: 38,
+    height: 38,
+    minHeight: 38,
+    backgroundColor: "#f9fafb",
+    color: "#374151",
+    borderRadius: "10px",
+    boxShadow: "none",
+    border: "1px solid #e5e7eb",
+    transition: "all 0.18s ease",
+     "&:hover": {
+    backgroundColor: "rgba(25, 118, 210, 0.06)",
+      transform: "translateY(-2px)",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    },
+  }}
+>
+  <HistoryIcon />
+</Fab>
+</Tooltip>
             <Popover
                 open={open}
                 anchorEl={anchorEl}
@@ -128,7 +144,9 @@ export default function RecentFilesPopup({ recentFiles, onFileLoad, onUpdateRece
                     <Typography variant="h6" gutterBottom>
                         Recently Edited Files
                     </Typography>
-                    {recentFiles.length === 0 && <Typography>No recent files found.</Typography>}
+                    {(!recentFiles || recentFiles.length === 0) && (
+  <Typography>No recent files found.</Typography>
+)}
                     <List dense>
                         {recentFiles.map((file) => (
                             <React.Fragment key={file.id}>

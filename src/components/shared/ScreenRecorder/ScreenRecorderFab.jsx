@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Fab, Paper, Button, Checkbox, FormControlLabel, Modal, Box, Typography, Slide } from '@mui/material';
+import { Fab, Paper, Button, Checkbox, FormControlLabel, Modal, Box, Typography, Slide,Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 // --- MUI Icons ---
@@ -33,7 +33,7 @@ const modalStyle = {
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
-  borderRadius: 2,
+  borderRadius: 10,
 };
 
 export default function ScreenRecorder({ onUpload, position = 'fixed' }) {
@@ -101,14 +101,30 @@ export default function ScreenRecorder({ onUpload, position = 'fixed' }) {
         <>
             <RecorderWrapper position={position}>
                 {/* --- Floating Action Button (FAB) --- */}
+                <Tooltip title="Screen Recorder" arrow>
                 <Fab
-                    color={status === 'recording' ? 'error' : 'primary'}
-                    aria-label="record"
-                    onClick={() => setIsControlsVisible(!isControlsVisible)}
-                >
-                    {status === 'recording' ? <StopCircleIcon /> : <VideocamIcon />}
-                </Fab>
-
+  aria-label="record"
+  onClick={() => setIsControlsVisible(!isControlsVisible)}
+  sx={{
+    width: 38,
+    height: 38,
+    minHeight: 38,
+    backgroundColor: "#f9fafb",
+    color: "#374151",
+    borderRadius: "10px",
+    boxShadow: "none",
+    border: "1px solid #e5e7eb",
+    transition: "all 0.18s ease",
+     "&:hover": {
+    backgroundColor: "rgba(25, 118, 210, 0.06)",
+      transform: "translateY(-2px)",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    },
+  }}
+>
+  {status === "recording" ? <StopCircleIcon /> : <VideocamIcon />}
+</Fab>
+</Tooltip>
                 {/* --- Recording Controls Strip --- */}
                 <Slide direction="right" in={isControlsVisible || status === 'recording'} mountOnEnter unmountOnExit>
                     <Paper elevation={4} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, borderRadius: 2 }}>

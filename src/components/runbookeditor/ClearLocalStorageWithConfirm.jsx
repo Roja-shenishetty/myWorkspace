@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
-import { Fab, Popover, Box, Typography, Button } from "@mui/material";
+import { Fab, Popover, Box, Typography, Button,Tooltip } from "@mui/material";
 import RestartAlt from "@mui/icons-material/RestartAlt";
+
 
 export default function ClearLocalStorageWithConfirm({ onClear }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -23,16 +24,31 @@ export default function ClearLocalStorageWithConfirm({ onClear }) {
 
   return (
     <>
+    <Tooltip title="Clear Local" arrow>
       <Fab
-        color="secondary"
-        aria-label="clear local storage"
-        onClick={handleClick}
-        ref={buttonRef}
-        
-      >
-        <RestartAlt />
-      </Fab>
-
+  aria-label="clear local storage"
+  onClick={handleClick}
+  ref={buttonRef}
+  sx={{
+    width: 38,
+    height: 38,
+    minHeight: 38,
+    backgroundColor: "#f9fafb",
+    color: "#374151",
+    borderRadius: "10px",
+    boxShadow: "none",
+    border: "1px solid #e5e7eb",
+    transition: "all 0.18s ease",
+     "&:hover": {
+    backgroundColor: "rgba(25, 118, 210, 0.06)",
+      transform: "translateY(-2px)",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    },
+  }}
+>
+  <RestartAlt />
+</Fab>
+</Tooltip>
       <Popover
         open={open}
         anchorEl={anchorEl}

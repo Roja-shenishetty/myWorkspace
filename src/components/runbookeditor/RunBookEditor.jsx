@@ -29,7 +29,7 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import ClearLocalStorageWithConfirm from "./ClearLocalStorageWithConfirm";
 import RecentFilesPopup from "./RecentFilesPopup";
 import ScreenCameraRecorderFab from "../shared/CameraRecorder/ScreenCameraRecorderFab";
-
+import { Fade } from "@mui/material";
 
 // Your default favourites file, e.g., a raw link from a GitHub repo
 const defaultFavouritesUrl = "https://raw.githubusercontent.com/venkatparsi/ilearn-course-sweng-js-ts-react-python-django/refs/heads/master/course/table-of-contents.json";
@@ -185,6 +185,7 @@ export default function RunBookEditor() {
     const [recentFiles, setRecentFiles] = useState(loadRecentFiles);
     const [tab, setTab] = useState(0);
     const sectionRefs = useRef([]);
+    const [menuOpen,setMenuOpen]=useState(false);
     const [currentFileName, setCurrentFileName] = useState("runbook.json");
     // Example in Parent Component
     const [hideUI, setHideUI] = useState(false);
@@ -203,6 +204,7 @@ export default function RunBookEditor() {
     const fileInputRef = useRef(null);
 
     const handleSaveFile = () => {
+          console.log("Save clicked");
         addToRecentFiles({
             id: currentFileName, // or a unique id for your files
             fileName: currentFileName,
@@ -265,7 +267,7 @@ export default function RunBookEditor() {
                 //         return;
             }
         }
-
+        
         // const input = document.createElement('input');
         // input.type = 'file';
         // input.accept = 'application/json';
@@ -336,7 +338,8 @@ export default function RunBookEditor() {
     }
 
     const handleShowEdit = () => {
-        setTab(0)
+        console.log("InEditMode");
+        setTab(0);
     }
 
 
@@ -665,86 +668,25 @@ export default function RunBookEditor() {
         localStorage.setItem(RECENT_FILES_KEY, JSON.stringify(updatedFiles));
     };
 
-    return (
+     return (
+        
         <div className="flex min-h-screen items-center flex-col h-full w-full bg-gray-100">
-
+            
             <FileAppBar offset={0} setHideUI={setHideUI} hideUI={hideUI} currentFileName={currentFileName} onOpenFile={handleOpenFile} onSaveFile={() => handleSaveSectionsJSON(sections)}></FileAppBar>
-            <Box sx={{ height: 64, display: hideUI ? "none" : "block" }} /> {/* Spacer to offset fixed header */}
-            <Box display={"flex"}
-                sx={{
-                    width: "95%",
-                    // display: "flex",
-                    position: "fixed",
-                    gap: 2,
-                    mb: 2,
-                    mt: "55px",
-                    overflowX: "auto",      // Allows scrolling on X-axis
-                    pb: 1,                  // Padding bottom for scrollbar spacing
-                    "&::-webkit-scrollbar": { display: "none" }, // Optional: Hides scrollbar for cleaner look
-                    "& > *": {              // Selects all direct children (buttons)
-                        flexShrink: 0       // Forces them to keep their original width
-                    },
-                    backgroundColor: "white",
-                    zIndex: 100,
-                    display: hideUI ? "none" : "flex"
-
-                }}>
-                <input
-                    type="file"
-                    accept="application/json"
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                    id="import-sections-json"
-                    onChange={handleLoadSectionsJSON}
-                />
-                <label htmlFor="import-sections-json">
-                    <Fab component="span" color="primary">
-
-                        <FolderOpenIcon />
-                    </Fab>
-                </label>
-
-                <Fab
-                    color="primary"
-                    aria-label="add"
-                    onClick={handleSaveFile}
-                >
-                    <SaveIcon />
-                </Fab>
-
-                {/* Just add the FavouritesPopup component here */}
-                <FavouritesPopup onFileSelect={handleFavouriteSelect} defaultFavouritesUrl={defaultFavouritesUrl} />
-                <Fab
-                    color="primary"
-                    aria-label="preview"
-                    onClick={handleShowPreview}
-                >
-                    <VisibilityIcon fontSize="medium" />
-
-                </Fab>
-                <Fab
-                    color="primary"
-                    aria-label="add"
-                    onClick={handleShowEdit}
-                >
-                    <EditIcon fontSize="medium" />
-                </Fab>
-
-                <ScreenRecorderFab position="static"></ScreenRecorderFab>
-                <YouTubeUploaderFab>ddd</YouTubeUploaderFab>
-                <ClearLocalStorageWithConfirm onClear={handleClearLocal} />
-                <RecentFilesPopup recentFiles={recentFiles} onFileLoad={handleLoadRecentFile} onUpdateRecentFiles={updateRecentFiles} />
-            </Box>
+            
+            <Box sx={{ height: 40, display: hideUI ? "none" : "block" }} /> {/* Spacer to offset fixed header */}
+            
             <Container
                 sx={{
-                    maxWidth: "1000px",
-                    width: "97%",
+                    
+                    width: "100%",
                     mx: "auto",
                     py: 2,
-                    px: { xs: 1, sm: 2 }, // Add some horizontal padding
+                    px: 2, // Add some horizontal padding
                     background: "#fff",
-                    borderRadius: 2,
+                    borderRadius: 1,
                     boxShadow: 2,
+                    border: "1px solid #e5e7eb",
                     mt: 1,
                     minHeight: "88vh",
                     display: "flex",
@@ -752,16 +694,18 @@ export default function RunBookEditor() {
                     overflowX: "scroll",
                     alignItems: "stretch",
                     justifyContent: "flex-start",
+                    
                 }}
             //maxWidth={false} // REMOVED to enforce the maxWidth above
             >
-
-
-                {tab === 0 && (
+                <Fade in={tab === 0} timeout={300} unmountOnExit>
+                    <div>
                     <Box sx={{ width: "100%" }}>
                         <EditorTimeLine sx={{ width: "95%" }}
                             hideUI={hideUI} // <--- Pass the prop here
                             sections={sections}
+                            tab={tab}
+                            setTab={setTab}
                             sectionRefs={sectionRefs}
                             handleCloneSection={handleCloneSection}
                             handlePasteSection={handlePasteSection}
@@ -770,13 +714,19 @@ export default function RunBookEditor() {
                             onDelete={handleDelete}
                             onAddCodeFile={handleAddCodeFile}
                             onAddMediaFile={handleAddMediaFile}
+                            handleLoadSectionsJSON={handleLoadSectionsJSON}
+   handleSaveFile={handleSaveFile}
+   selectedTabs={selectedTabs}
+   
+   handleShowEdit={handleShowEdit}
+   handleShowPreview={handleShowPreview}
                             onReorderCodeFile={(sectionId, fileId, direction) =>
                                 handleReorderFile(sectionId, "codeFiles", fileId, direction)
                             }
                             onReorderMediaFile={(sectionId, mediaId, direction) =>
                                 handleReorderFile(sectionId, "mediaFiles", mediaId, direction)
                             }
-                            selectedTabs={selectedTabs}
+                            
                             onSelectedTabChange={(sectionId, tabType, newIndex) => {
                                 setSelectedTabs((prev) => ({
                                     ...prev,
@@ -787,7 +737,7 @@ export default function RunBookEditor() {
                                 }));
                             }}
                         />
-
+                        
                         {/*right side buttons*/}
                         <Fab
                             color="primary"
@@ -864,10 +814,11 @@ export default function RunBookEditor() {
                             <KeyboardArrowDownIcon />
                         </Fab>
                     </Box>
-                )}
+                </div>
+                </Fade>
 
-                {tab === 1 &&
-                    (<>
+                <Fade in={tab === 1} timeout={300} unmountOnExit>
+                    <div>
                         <StyledPreviewTimeline sections={sections} />
 
                         <Fab
@@ -942,11 +893,12 @@ export default function RunBookEditor() {
                         >
                             <KeyboardArrowDownIcon />
                         </Fab>
-                    </>
-                    )}
+                    </div>
+                    </Fade>
 
             </Container>
 
         </div >
     );
 }
+    

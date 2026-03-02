@@ -1,6 +1,23 @@
 import React, { useEffect, useRef } from 'react';
-import { Box, Fab } from "@mui/material";
+import { Box, Fab, Tooltip,Paper,Stack,Divider } from "@mui/material";
 
+const minimalFab = {
+  width: 38,
+  height: 38,
+  minHeight: 38,
+  backgroundColor: "#f9fafb",
+  color: "#374151",
+  borderRadius: "10px",
+  boxShadow: "none",
+  border: "1px solid #e5e7eb",
+  transition: "all 0.18s ease",
+  "&:hover": {
+    backgroundColor: "rgba(25, 118, 210, 0.06)",
+    transform: "translateY(-2px)",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    color:"rgba(0,0,0,0.5)"
+  },
+};
 // 1. EXTRACT NavigationBar OUTSIDE of EditorTimeline
 const SectionNavigationBar = ({
     sections,
@@ -49,61 +66,84 @@ const SectionNavigationBar = ({
     };
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                gap: 0,
-                top: hideUI ? 55 :114,
-                //top: 114, // Fits below your main app bar
-                p: 1,
-                position: "fixed",
-                width: "90%",
-                backgroundColor: "white", // Solid background prevents transparency issues
-                mb: 1,
-                overflowX: "auto",
-                pb: 1,
-                zIndex: 100,
-                borderBottom: "1px solid #eee", // Visual separation
-                "&::-webkit-scrollbar": { height: 4 },
-                "&::-webkit-scrollbar-thumb": { backgroundColor: "#ccc", borderRadius: 2 }
-            }}
+         <Paper
+    elevation={0}
+    sx={{
+      width: "100%",
+      borderRadius: "3px",
+      backgroundColor: "#ffffff",
+      border: "1px solid #e5e7eb",
+      boxShadow: "0 6px 24px rgba(0,0,0,0.04)",
+      p: 0.5,
+      mt: 1
+    }}
+  >
+    <Stack direction="row" alignItems="center" spacing={1}>
+      
+      {/* Mode Toggle */}
+      <Tooltip
+        title={displayMode === "vertical"
+          ? "Switch to Horizontal View"
+          : "Switch to Vertical View"}
+        arrow
+      >
+        <Fab
+          onClick={() =>
+            setDisplayMode(displayMode === "vertical" ? "horizontal" : "vertical")
+          }
+          sx={minimalFab}
         >
-            {/* Mode Toggle Button */}
-            <Box sx={{ display: "flex", gap: 1, position: "sticky", left: 0, backgroundColor: "white", zIndex: 1111, pr: 2 }}>
-                <Fab
-                    onClick={() => setDisplayMode(displayMode === 'vertical' ? "horizontal" : "vertical")}
-                    size="medium"
-                    color={displayMode === "vertical" ? "warning" : "success"}
-                    sx={{ flexShrink: 0, fontWeight: 'bold', boxShadow: 2 }}
-                >
-                    {displayMode === "vertical" ? "V" : "H"}
-                </Fab>
-            </Box>
+          {displayMode === "vertical" ? "V" : "H"}
+        </Fab>
+      </Tooltip>
 
-            {/* Scrollable Number Buttons */}
-            <Box
-                ref={navScrollRef}
-                sx={{ width: "100%", display: "flex", gap: 1, backgroundColor: "white", alignItems: "center" }}
+      <Divider orientation="vertical" flexItem />
+
+      {/* Scrollable Section Buttons */}
+      <Box
+        ref={navScrollRef}
+        sx={{
+          display: "flex",
+          gap: 1,
+          overflowX: "auto",
+          alignItems: "center",
+          width: "100%",
+          "&::-webkit-scrollbar": { height: 4 },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#ccc",
+            borderRadius: 2
+          }
+        }}
+      >
+        {sections.map((section, i) => (
+          <Tooltip
+            key={section.id}
+            title={`Go to Section ${i + 1}`}
+            arrow
+          >
+            <Fab
+              data-id={section.id}
+              onClick={() => onSectionClick(section.id)}
+              sx={{
+                ...minimalFab,
+                backgroundColor:
+                  selectedHorizontalSection === section.id
+                    ? "rgba(25, 118, 210)"
+                    : "#f5f5f5",
+                color:
+                  selectedHorizontalSection === section.id
+                    ? "#fff"
+                    : "#333"
+              }}
             >
-                {sections.map((section, i) => (
-                    <Fab
-                        key={section.id}
-                        data-id={section.id} // Important for the useEffect querySelector
-                        size="medium"
-                        color={selectedHorizontalSection === section.id ? "primary" : "default"}
-                        onClick={() => onSectionClick(section.id)}
-                        sx={{
-                            flexShrink: 0,
-                            fontWeight: 'bold',
-                            minWidth: '48px', // Ensure circle shape isn't squashed
-                            transition: 'all 0.3s ease'
-                        }}
-                    >
-                        {i + 1}
-                    </Fab>
-                ))}
-            </Box>
-        </Box>
+              {i + 1}
+            </Fab>
+          </Tooltip>
+        ))}
+      </Box>
+
+    </Stack>
+  </Paper>
     );
 };
 

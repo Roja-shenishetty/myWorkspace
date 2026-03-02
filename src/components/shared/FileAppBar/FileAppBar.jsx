@@ -53,7 +53,7 @@ export default function FileAppBar({ onOpenFile, onSaveFile, offset, currentFile
     
     return (
         <>
-            <Paper elevation={2} sx={{ position: "fixed", width: "100%", zIndex: 2, top: offset }}>
+            <Paper elevation={2} sx={{ position: "fixed", width: "100%", zIndex: 9999, top: offset }}>
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         {currentFileName ? `${currentFileName}` : 'Runbook Editor'}

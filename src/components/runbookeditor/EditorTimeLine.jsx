@@ -1,51 +1,71 @@
 import React, { useState, useEffect, useRef } from "react";
 
+import { 
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  IconButton,
+  MenuItem,
+  Tabs,
+  Tab,
+  Button,
+  Chip,
+  Fab,
+  useMediaQuery
+} from "@mui/material";
+
+import { useTheme } from "@mui/material/styles";
+
 import Timeline from "@mui/lab/Timeline";
-import TimelineItem from "@mui/lab/TimelineItem";
+import TimelineItem, { timelineItemClasses } from "@mui/lab/TimelineItem";
 import TimelineSeparator from "@mui/lab/TimelineSeparator";
 import TimelineDot from "@mui/lab/TimelineDot";
 import TimelineConnector from "@mui/lab/TimelineConnector";
 import TimelineContent from "@mui/lab/TimelineContent";
-import { timelineItemClasses } from '@mui/lab/TimelineItem';
-import {
-    Box,
-    Card,
-    CardContent,
-    Typography,
-    TextField,
-    IconButton,
-    MenuItem,
-    Tabs,
-    Tab,
-    Button,
-    Chip,
-    Fab
-} from "@mui/material";
+
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import Editor from "@monaco-editor/react";
-import MarkdownEditorWithToolbar from "../shared/simple-markdown/MarkdownEditorWithToolbar";
-import UrlDropPreviewCard from "../shared/UrlDropPreviewCard/UrlDropPreviewCard";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import SectionNavigationBar from "./SectionNavigationBar";
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import TeachingPlanEditor from './TeachingPlanEditor'
-import TimePopupButton from "./TimePopupButton";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import PasteIcon from "@mui/icons-material/FileCopy";
-import FilterNoneIcon from "@mui/icons-material/FilterNone"
-import ControlPointDuplicateIcon from '@mui/icons-material/ControlPointDuplicate';
-import { ArrowBackIos as ArrowBackIosIcon, ArrowForwardIos as ArrowForwardIosIcon } from '@mui/icons-material'
+import FilterNoneIcon from "@mui/icons-material/FilterNone";
+import ControlPointDuplicateIcon from "@mui/icons-material/ControlPointDuplicate";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
+import FolderOpenIcon from "@mui/icons-material/FolderOpen";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import { ArrowBackIos as ArrowBackIosIcon, ArrowForwardIos as ArrowForwardIosIcon } from "@mui/icons-material";
 
-import { useMediaQuery } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import Editor from "@monaco-editor/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
+import { v4 as uuidv4 } from "uuid";
+
+import MarkdownEditorWithToolbar from "../shared/simple-markdown/MarkdownEditorWithToolbar";
+import UrlDropPreviewCard from "../shared/UrlDropPreviewCard/UrlDropPreviewCard";
+import SectionNavigationBar from "./SectionNavigationBar";
+import TeachingPlanEditor from "./TeachingPlanEditor";
+import TimePopupButton from "./TimePopupButton";
+import FileAppBar from "../shared/FileAppBar/FileAppBar";
+import FavouritesPopup from "../shared/FavouritesTree/FavouritesPopup";
+import EditorTimeLine from "./EditorTimeLine";
+import YouTubeUploader from "../shared/YouTubeUploader/YouTubeUploader";
+import ScreenRecorder from "../shared/ScreenRecorder/ScreenRecorder";
+import ScreenRecorderFab from "../shared/ScreenRecorder/ScreenRecorderFab";
+import YouTubeUploaderFab from "../shared/YouTubeUploader/YouTubeUploaderFab";
+import ScreenCameraRecorderFab from "../shared/CameraRecorder/ScreenCameraRecorderFab";
+import ClearLocalStorageWithConfirm from "./ClearLocalStorageWithConfirm";
+import RecentFilesPopup from "./RecentFilesPopup";
+import SaveIcon from "@mui/icons-material/Save";
+import { Paper, Stack, Tooltip, Divider } from "@mui/material";
 
 // Dummy languages list (replace with your real list)
 const languages = [
@@ -76,8 +96,27 @@ function TabPanel({ children, hidden }) {
     return <div hidden={hidden}>{!hidden && children}</div>;
 }
 
+const minimalFab = {
+  width: 38,
+  height: 38,
+  minHeight: 38,
+  backgroundColor: "#f9fafb",
+  color: "#374151",
+  borderRadius: "10px",
+  boxShadow: "none",
+  border: "1px solid #e5e7eb",
+  transition: "all 0.18s ease",
+  "&:hover": {
+    backgroundColor:  "rgba(25, 118, 210, 0.06)",
+    transform: "translateY(-2px)",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  },
+};
+
 export default function EditorTimeline({
     sections,
+    tab,
+    setTab,
     onChange,
     onDelete,
     handleCloneSection,
@@ -89,10 +128,22 @@ export default function EditorTimeline({
     onReorderMediaFile,
     selectedTabs, // New prop
     onSelectedTabChange, // New callback prop
-    hideUI
+    hideUI,
+    handleSaveFile,
+    handleFavouriteSelect,
+    defaultFavouritesUrl,
+    handleShowPreview,
+    handleShowEdit,
+    handleClearLocal,
+    recentFiles,
+    handleLoadRecentFile,
+    updateRecentFiles,
+    handleLoadSectionsJSON
 }) {
+
+
     const [localMediaEdits, setLocalMediaEdits] = useState({});
-    const [openTeachingPlanFor, setOpenTeachingPlanFor] = React.useState(null);
+    const [openTeachingPlanFor, setOpenTeachingPlanFor] = useState(null);
 
     const openTeachingPlan = (sectionId) => setOpenTeachingPlanFor(sectionId);
     const closeTeachingPlan = () => setOpenTeachingPlanFor(null);
@@ -102,7 +153,7 @@ export default function EditorTimeline({
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     // Add displayMode state at the start of your component
-
+const fileInputRef = useRef(null);  
     const [displayMode, setDisplayMode] = useState("vertical"); // or load from props if you want
 
     const handleCodeTabChange = (sectionId, newIndex) => {
@@ -255,7 +306,7 @@ export default function EditorTimeline({
         }
     };
 
-    // Add slider ref for horizontal scrolling
+    //Add slider ref for horizontal scrolling
     const sliderRef = useRef(null);
     const [selectedHorizontalSection, setSelectedHorizontalSection] = useState(
         sections.length > 0 ? sections[0].id : null
@@ -288,32 +339,143 @@ export default function EditorTimeline({
 
     return (
         <>
-            <SectionNavigationBar displayMode={displayMode} setDisplayMode={setDisplayMode} sections={sections} hideUI={hideUI}
-             selectedHorizontalSection={selectedHorizontalSection} handleNavigate={setSelectedHorizontalSection} />
-            <Box mt={0} sx={{ width: "100%", mt: hideUI ? 4 : 10 }}>
-               
+           <Paper
+  elevation={0}
+  sx={{
+    width: "100%" ,
+    borderRadius: "3px",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e5e7eb",
+    boxShadow: "0 6px 24px rgba(0,0,0,0.04)",
+    p:0.5
+  }}
+>
+    <Stack
+  direction="row"
+    alignItems="center"
+    sx={{
+      width: "100%",
+      justifyContent: "space-between", // <-- push left/right groups to edges
+    }}
+>
+                 {/* ========== FILE GROUP ========== */}
+<Box sx={{ display: "flex", gap: 1.2, alignItems: "center" }}>
+    <Tooltip title="Import JSON" arrow>
+  <Fab component="label" sx={minimalFab}>
+    <FolderOpenIcon sx={{ fontSize: 18 }} />
+    <input
+      type="file"
+      accept="application/json"
+      hidden
+      onChange={handleLoadSectionsJSON}
+    />
+  </Fab>
+</Tooltip>
 
-                {displayMode === "vertical" && (
-                     <Timeline position="right" sx={{ padding: 0, width: "100%", mx: 0 }}>
+   <Tooltip title="Save (Ctrl+S)" arrow>
+  <Fab
+   onClick={handleSaveFile ?? (() => {})}
+    sx= {minimalFab}
+  >
+    <SaveIcon sx={{ fontSize: 18 }} />
+  </Fab>
+</Tooltip>
+
+    <Divider orientation="vertical" flexItem />
+
+    {/* ========== MEDIA GROUP ========== */}
+
+    <ScreenRecorderFab position="static"></ScreenRecorderFab>
+    <YouTubeUploaderFab/>
+
+    <Divider orientation="vertical" flexItem />
+
+    {/* ========== SYSTEM GROUP ========== */}
+
+    <RecentFilesPopup
+      recentFiles={recentFiles}
+      onFileLoad={handleLoadRecentFile}
+      onUpdateRecentFiles={updateRecentFiles}
+    />
+
+    <ClearLocalStorageWithConfirm onClear={handleClearLocal}/>
+</Box>
+  </Stack>
+<SectionNavigationBar
+  displayMode={displayMode}
+  setDisplayMode={setDisplayMode}
+  sections={sections}
+  hideUI={hideUI}
+  selectedHorizontalSection={selectedHorizontalSection}
+  handleNavigate={handleNavigate}
+/>
+
+</Paper>
+            <Box mt={0} sx={{ width: "100%", mt: hideUI ? 2 : 5 }}>
+               <Typography
+    variant="h6" // or h5 for slightly larger
+    sx={{
+      px: 1,                // horizontal padding
+      py: 1,                // vertical padding
+      mb: 3,                // margin-bottom to separate from timeline
+      borderRadius: 1,      // rounded corners
+      bgcolor: "#f3f4f6",   // light gray background
+      color: "#111827",     // dark text color
+      fontWeight: 600,      // semi-bold
+      boxShadow: "0 2px 6px rgba(0,0,0,0.05)", // subtle shadow
+    }}
+  >
+    Rich Text Editor with Markdown Support and Toolbar Actions
+  </Typography>
+  
+  {displayMode === "vertical" && (
+                     <Timeline
+  sx={{
+    p: 0,
+    m: 0,
+    width: "100%",
+    "& .MuiTimelineItem-root": {
+      minHeight: "auto",
+    },
+    "& .MuiTimelineContent-root": {
+      p: 0,
+    },
+    "& .MuiTimelineItem-root:before": {
+      flex: 0,
+      padding: 0,
+    }
+  }}
+>
                         {sections.map((section, idx) => (
                             <TimelineItem
-                                key={section.id}
-                                id={`section-${section.id}`} // <--- The Target ID
-                                sx={{
-                                    "&::before": { display: "none" },
-                                }}
-                            >
-                                <TimelineSeparator>
+  key={section.id}
+  id={`section-${section.id}`}
+  sx={{
+    "&::before": { display: "none" },
+    mb: 4   // <-- clean vertical spacing
+  }}
+>
+                                {/* <TimelineSeparator>
                                     <TimelineDot color="primary">
                                         <Typography sx={{ color: "#fff", fontWeight: 700,  }}>
                                             {section.order}
                                         </Typography>
                                     </TimelineDot>
                                     {idx < sections.length - 1 && <TimelineConnector />}
-                                </TimelineSeparator>
+                                </TimelineSeparator> */}
                                 
-                                <TimelineContent sx={{ py: 1, width: "100%" }}>
-                                    <Card variant="outlined" sx={{ width: "95%" }}>
+                                <TimelineContent sx={{  width: "100%",p: 0 }}>
+                                   <Card
+  elevation={0}
+  sx={{
+    border: "1px solid #e5e7eb",
+    borderRadius: "2px",
+    transition: "all 0.2s ease",
+    "&:hover": {
+      boxShadow: "0 4px 16px rgba(0,0,0,0.05)"
+    }
+  }}
+>
                                         <CardContent>
                                             {/* Section Info and Tools  */}
                                             <Box>
@@ -321,7 +483,7 @@ export default function EditorTimeline({
                                                     {/* Section Info  */}
 
                                                     <TextField
-                                                        label={<Chip size="large" sx={{ m: 0, p: 2, fontSize: "1.1em", width: "100%" }} label="Section Title"></Chip>}
+                                                        label={<Chip size="large" sx={{ m: 0, p: 2, fontSize: "1.1em", width: "100%" }} label={`#${section.order}`}></Chip>}
                                                         variant="standard"
                                                         sx={{ p: 2, minWidth: "200px" }}
                                                         fullWidth
@@ -411,7 +573,7 @@ export default function EditorTimeline({
                                                     variant="scrollable"
                                                     scrollButtons="auto"
                                                     allowScrollButtonsMobile
-                                                    value={selectedTabs.code[section.id] || 0}
+                                                   value={selectedTabs?.code?.[section.id] || 0}
                                                     onChange={(e, newIndex) => handleCodeTabChange(section.id, newIndex)}
                                                 >
                                                     {section?.codeFiles?.map((file, fileIdx) => (
@@ -735,7 +897,6 @@ export default function EditorTimeline({
 
                 {displayMode === "horizontal" && (
                     <Box sx={{ position: "relative", width: "95%" }}>
-
                         <Box
                             ref={sliderRef}
                             sx={{
@@ -766,27 +927,27 @@ export default function EditorTimeline({
                                             },
                                         }}
                                     >
-                                        <TimelineSeparator>
-                                            <TimelineDot color="primary">
-                                                <Typography sx={{ color: "#fff", fontWeight: 700 }}>
-                                                    {section.order}
-                                                </Typography>
-                                            </TimelineDot>
-                                            {idx < sections.length - 1 && <TimelineConnector />}
-                                        </TimelineSeparator>
-
+                                        <TimelineSeparator sx={{ px: 0 }}>
+  {idx < sections.length - 1 && (
+    <TimelineConnector
+      sx={{
+        backgroundColor: "#f1f3f5",
+        width: "1px"
+      }}
+    />
+  )}
+</TimelineSeparator>
                                         <TimelineContent sx={{ py: 2 }}>
                                             <Card variant="outlined" sx={{ width: "80vw" }}>
                                                 <CardContent>
-                                         
-
                                                       {/* Section Info and Tools  */}
                                             <Box>
+                                                
                                                 <Box display="flex" alignItems="left" gap={2} mb={2} width={"100%"}>
                                                     {/* Section Info  */}
-
+                                                    
                                                     <TextField
-                                                        label={<Chip size="large" sx={{ m: 0, p: 2, fontSize: "1.1em", width: "100%" }} label="Section Title"></Chip>}
+                                                        label={<Chip size="large" sx={{ m: 0, p: 2, fontSize: "1.1em", width: "100%" }} label={`#${section.order}`}></Chip>}
                                                         variant="standard"
                                                         sx={{ p: 2, minWidth: "200px" }}
                                                         fullWidth

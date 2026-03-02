@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Fab, Popover, Card, CardContent, Button, Typography, Box, CircularProgress, Link, Snackbar, Alert } from '@mui/material';
+import { Fab, Popover, Card, CardContent, Button, Typography, Box, CircularProgress, Link, Snackbar, Alert,Tooltip } from '@mui/material';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import GoogleIcon from '@mui/icons-material/Google';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -232,10 +232,32 @@ export default function YouTubeUploaderFab() {
 
     return (
         <>
-            <Fab color={['done', 'polling_stopped'].includes(uploadState) ? "success" : "error"} onClick={handleFabClick} >
-                {['done', 'failed', 'polling_stopped'].includes(uploadState) ? <ReplayIcon /> : <YouTubeIcon />}
-            </Fab>
-
+        <Tooltip title="Youtube Loader" arrow>
+            <Fab
+  onClick={handleFabClick}
+  sx={{
+    width: 38,
+    height: 38,
+    minHeight: 38,
+    borderRadius: "10px",
+    boxShadow: "none",
+    border: "1px solid #e5e7eb",
+    transition: "all 0.18s ease",
+    backgroundColor: "#f9fafb",
+    color: "#374151",
+  "&:hover": {
+    backgroundColor:  "rgba(25, 118, 210, 0.06)",
+    transform: "translateY(-2px)",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  },
+  }}
+>
+  {['done', 'failed', 'polling_stopped'].includes(uploadState)
+    ? <ReplayIcon />
+    : <YouTubeIcon />
+  }
+</Fab>
+</Tooltip>
             <Popover open={open} anchorEl={anchorEl} onClose={handlePopoverClose} anchorOrigin={{ vertical: 'top', horizontal: 'left' }} transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
                 <Card sx={{ width: 360, minHeight: 180 }}>
                     <CardContent sx={{ p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2 }}>
