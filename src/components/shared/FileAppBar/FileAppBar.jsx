@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Paper, Box } from "@mui/material";
+import { Paper, Box, Drawer,Stack } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
@@ -14,6 +14,16 @@ import SaveIcon from "@mui/icons-material/Save";
 import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import AppBar from "@mui/material/AppBar";
+import {
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider
+} from "@mui/material";
 
 // Example metadata state
 const initialMetadata = {
@@ -22,11 +32,26 @@ const initialMetadata = {
     subject: "",
     filename: "runbook"
 };
-
-export default function FileAppBar({ onOpenFile, onSaveFile, offset, currentFileName, setHideUI, hideUI }) {
+  
+export default function FileAppBar({ onOpenFile, onSaveFile, setHideUI, hideUI, drawerOpen, setDrawerOpen  }) {
+  
+const sideIcons = {
+  borderRadius: "10px",
+  mb: 1,
+  px: 1,
+  "& .MuiListItemIcon-root": {
+    minWidth: 40,
+    color: "#374151",
+  },
+  "& .MuiSvgIcon-root": {
+    fontSize: 20,
+  },
+  "&:hover": {
+    backgroundColor: "#f3f4f6",
+  },
+};
     const [metadata, setMetadata] = useState(initialMetadata);
     const [anchorEl, setAnchorEl] = useState(null);
-
     // Handle Popover open
     const handleMetadataClick = event => setAnchorEl(event.currentTarget);
     const handleMetadataClose = () => setAnchorEl(null);
@@ -53,34 +78,82 @@ export default function FileAppBar({ onOpenFile, onSaveFile, offset, currentFile
     
     return (
         <>
-            <Paper elevation={2} sx={{ position: "fixed", width: "100%", zIndex: 9999, top: offset }}>
-                <Toolbar>
-                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                        {currentFileName ? `${currentFileName}` : 'Runbook Editor'}
-                    </Typography>
+            <AppBar
+  position="fixed"
+  color="default"
+  elevation={1}
+>
+                
+  <Toolbar>
+    <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
+  {drawerOpen ? <CloseIcon /> : <MenuIcon />}
+</IconButton>
+  </Toolbar>
+</AppBar>
+      
+                    {/* Sidebar Drawer */}
+  <Drawer
+  anchor="left"
+  open={drawerOpen}
+  onClose={() => setDrawerOpen(false)}
+>
+  <Box sx={{ width: 250, height: "100%" }}>
+<Box
+  sx={{
+    display: "flex",
+    justifyContent: "flex-end",
+    p: 1
+  }}
+>
+  <IconButton onClick={() => setDrawerOpen(false)}>
+    <CloseIcon />
+  </IconButton>
+</Box>
+    <List>
 
-                    <Tooltip title="Open File">
-                        <IconButton color="primary" onClick={onOpenFile}>
-                            <FolderOpenIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Save Sections">
-                        <IconButton color="primary" onClick={onSaveFile}>
-                            <SaveIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Edit Metadata">
-                        <IconButton color="primary" onClick={handleMetadataClick}>
-                            <InfoIcon />
-                        </IconButton>
-                    </Tooltip>
+      <ListItemButton sx={sideIcons} onClick={() => {
+        onOpenFile?.();
+        setDrawerOpen(false);
+      }}>
+        <ListItemIcon>
+          <FolderOpenIcon />
+        </ListItemIcon>
+        <ListItemText primary="Open File" />
+      </ListItemButton>
 
-                 
-                    <IconButton onClick={() => setHideUI(!hideUI)}>
-                        {hideUI ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                    </IconButton>
-                </Toolbar>
-            </Paper>
+     <ListItemButton
+  sx={sideIcons}
+  onClick={onOpenFile}
+>
+        <ListItemIcon>
+          <SaveIcon />
+        </ListItemIcon>
+        <ListItemText primary="Save Sections" />
+      </ListItemButton>
+
+      <ListItemButton sx={sideIcons} onClick={handleMetadataClick}>
+        <ListItemIcon>
+          <InfoIcon />
+        </ListItemIcon>
+        <ListItemText primary="Edit Metadata" />
+      </ListItemButton>
+
+      <Divider />
+
+      <ListItemButton sx={sideIcons} onClick={() => setHideUI(!hideUI)}>
+        <ListItemIcon>
+          {hideUI ? <VisibilityIcon /> : <VisibilityOffIcon />}
+        </ListItemIcon>
+        <ListItemText
+          primary={hideUI ? "Show UI" : "Hide UI"}
+        />
+      </ListItemButton>
+
+    </List>
+
+  </Box>
+</Drawer>
+      
             <Popover
                 open={Boolean(anchorEl)}
                 anchorEl={anchorEl}

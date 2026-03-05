@@ -236,19 +236,20 @@ export default function YouTubeUploaderFab() {
             <Fab
   onClick={handleFabClick}
   sx={{
-    width: 38,
-    height: 38,
-    minHeight: 38,
-    borderRadius: "10px",
-    boxShadow: "none",
-    border: "1px solid #e5e7eb",
-    transition: "all 0.18s ease",
-    backgroundColor: "#f9fafb",
-    color: "#374151",
+    width: { xs: 26, sm: 38 },
+  height: { xs: 26, sm: 38 },
+  minHeight: "unset",
+  backgroundColor: "#f9fafb",
+  color: "#374151",
+  borderRadius: "8px",
+  boxShadow: "none",
+  border: "1px solid #e5e7eb",
+  transition: "all 0.18s ease",
+
   "&:hover": {
-    backgroundColor:  "rgba(25, 118, 210, 0.06)",
-    transform: "translateY(-2px)",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    backgroundColor: "rgba(25, 118, 210, 0.06)",
+    transform: "translateY(-1px)",
+    boxShadow: "0 3px 8px rgba(0,0,0,0.06)",
   },
   }}
 >

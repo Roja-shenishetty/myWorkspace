@@ -97,20 +97,26 @@ function TabPanel({ children, hidden }) {
 }
 
 const minimalFab = {
-  width: 38,
-  height: 38,
-  minHeight: 38,
-  backgroundColor: "#f9fafb",
+  width: { xs: 22, sm: 38 },
+  height: { xs: 22, sm: 38 },
+  minHeight: "unset",
+  backgroundColor: "#ffffff",
   color: "#374151",
-  borderRadius: "10px",
-  boxShadow: "none",
+  borderRadius: "8px",
   border: "1px solid #e5e7eb",
+  boxShadow: "none",
   transition: "all 0.18s ease",
+
   "&:hover": {
-    backgroundColor:  "rgba(25, 118, 210, 0.06)",
-    transform: "translateY(-2px)",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    backgroundColor: "#f3f4f6",
+    transform: "translateY(-1px)",
+    boxShadow: "0 3px 8px rgba(0,0,0,0.06)"
   },
+
+  "&:active": {
+    transform: "translateY(0px)",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
+  }
 };
 
 export default function EditorTimeline({
@@ -138,7 +144,9 @@ export default function EditorTimeline({
     recentFiles,
     handleLoadRecentFile,
     updateRecentFiles,
-    handleLoadSectionsJSON
+    handleLoadSectionsJSON,
+    currentFileName,
+    handleAddSection
 }) {
 
 
@@ -339,15 +347,18 @@ const fileInputRef = useRef(null);
 
     return (
         <>
-           <Paper
+    <Paper
   elevation={0}
   sx={{
-    width: "100%" ,
+    width: "100%",
     borderRadius: "3px",
     backgroundColor: "#ffffff",
     border: "1px solid #e5e7eb",
     boxShadow: "0 6px 24px rgba(0,0,0,0.04)",
-    p:0.5
+    p: 0.5,
+    position:"sticky",
+    top:"56px",           // ✅ IMPORTANT
+    zIndex: 1000,          // stay above sections
   }}
 >
     <Stack
@@ -359,10 +370,10 @@ const fileInputRef = useRef(null);
     }}
 >
                  {/* ========== FILE GROUP ========== */}
-<Box sx={{ display: "flex", gap: 1.2, alignItems: "center" }}>
+<Box sx={{display: "flex", gap: 1.2, alignItems: "center" }}>
     <Tooltip title="Import JSON" arrow>
   <Fab component="label" sx={minimalFab}>
-    <FolderOpenIcon sx={{ fontSize: 18 }} />
+    <FolderOpenIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
     <input
       type="file"
       accept="application/json"
@@ -377,7 +388,7 @@ const fileInputRef = useRef(null);
    onClick={handleSaveFile ?? (() => {})}
     sx= {minimalFab}
   >
-    <SaveIcon sx={{ fontSize: 18 }} />
+    <SaveIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
   </Fab>
 </Tooltip>
 
@@ -397,9 +408,31 @@ const fileInputRef = useRef(null);
       onFileLoad={handleLoadRecentFile}
       onUpdateRecentFiles={updateRecentFiles}
     />
-
     <ClearLocalStorageWithConfirm onClear={handleClearLocal}/>
+
+    {/* Right side buttons with tooltip and minimalFab style */}
+     <Divider orientation="vertical" flexItem />
+<Tooltip title="Add Section" arrow>
+  <Fab
+    color="primary"
+    onClick={handleAddSection}
+    sx={minimalFab}
+  >
+    <AddIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
+  </Fab>
+</Tooltip>
+
+<Tooltip title="Preview" arrow>
+  <Fab
+    color="primary"
+    onClick={handleShowPreview}
+    sx={minimalFab}
+  >
+    <VisibilityIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
+  </Fab>
+</Tooltip>
 </Box>
+
   </Stack>
 <SectionNavigationBar
   displayMode={displayMode}
@@ -424,8 +457,7 @@ const fileInputRef = useRef(null);
       fontWeight: 600,      // semi-bold
       boxShadow: "0 2px 6px rgba(0,0,0,0.05)", // subtle shadow
     }}
-  >
-    Rich Text Editor with Markdown Support and Toolbar Actions
+  >{currentFileName || "Runbook Editor"}
   </Typography>
   
   {displayMode === "vertical" && (
@@ -455,14 +487,6 @@ const fileInputRef = useRef(null);
     mb: 4   // <-- clean vertical spacing
   }}
 >
-                                {/* <TimelineSeparator>
-                                    <TimelineDot color="primary">
-                                        <Typography sx={{ color: "#fff", fontWeight: 700,  }}>
-                                            {section.order}
-                                        </Typography>
-                                    </TimelineDot>
-                                    {idx < sections.length - 1 && <TimelineConnector />}
-                                </TimelineSeparator> */}
                                 
                                 <TimelineContent sx={{  width: "100%",p: 0 }}>
                                    <Card

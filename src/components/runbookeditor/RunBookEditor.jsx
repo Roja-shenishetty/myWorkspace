@@ -31,6 +31,7 @@ import RecentFilesPopup from "./RecentFilesPopup";
 import ScreenCameraRecorderFab from "../shared/CameraRecorder/ScreenCameraRecorderFab";
 import { Fade } from "@mui/material";
 
+
 // Your default favourites file, e.g., a raw link from a GitHub repo
 const defaultFavouritesUrl = "https://raw.githubusercontent.com/venkatparsi/ilearn-course-sweng-js-ts-react-python-django/refs/heads/master/course/table-of-contents.json";
 
@@ -181,6 +182,7 @@ const loadRecentFiles = () => {
 
 
 export default function RunBookEditor() {
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const [sections, setSections] = useState(getInitialSections);
     const [recentFiles, setRecentFiles] = useState(loadRecentFiles);
     const [tab, setTab] = useState(0);
@@ -670,15 +672,21 @@ export default function RunBookEditor() {
 
      return (
         
-        <div className="flex min-h-screen items-center flex-col h-full w-full bg-gray-100">
+        <div className="flex min-h-screen flex-col h-full w-full bg-gray-100">
             
-            <FileAppBar offset={0} setHideUI={setHideUI} hideUI={hideUI} currentFileName={currentFileName} onOpenFile={handleOpenFile} onSaveFile={() => handleSaveSectionsJSON(sections)}></FileAppBar>
-            
-            <Box sx={{ height: 40, display: hideUI ? "none" : "block" }} /> {/* Spacer to offset fixed header */}
+            <FileAppBar drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} setHideUI={setHideUI} hideUI={hideUI} onOpenFile={handleOpenFile} onSaveFile={() => handleSaveSectionsJSON(sections)}></FileAppBar>
+             {/* Hidden file input */}
+    <input
+      type="file"
+      ref={fileInputRef}
+      hidden
+      accept=".json"
+      onChange={handleOpenFile}
+    />
+             <Box sx={{ height: 40, display: hideUI ? "none" : "block" }} /> 
             
             <Container
                 sx={{
-                    
                     width: "100%",
                     mx: "auto",
                     py: 2,
@@ -691,7 +699,7 @@ export default function RunBookEditor() {
                     minHeight: "88vh",
                     display: "flex",
                     flexDirection: "column",
-                    overflowX: "scroll",
+                    overflowX: "visible",
                     alignItems: "stretch",
                     justifyContent: "flex-start",
                     
@@ -704,6 +712,7 @@ export default function RunBookEditor() {
                         <EditorTimeLine sx={{ width: "95%" }}
                             hideUI={hideUI} // <--- Pass the prop here
                             sections={sections}
+                            currentFileName={currentFileName}
                             tab={tab}
                             setTab={setTab}
                             sectionRefs={sectionRefs}
@@ -717,7 +726,7 @@ export default function RunBookEditor() {
                             handleLoadSectionsJSON={handleLoadSectionsJSON}
    handleSaveFile={handleSaveFile}
    selectedTabs={selectedTabs}
-   
+   handleAddSection={handleAddSection}
    handleShowEdit={handleShowEdit}
    handleShowPreview={handleShowPreview}
                             onReorderCodeFile={(sectionId, fileId, direction) =>
@@ -737,82 +746,47 @@ export default function RunBookEditor() {
                                 }));
                             }}
                         />
-                        
-                        {/*right side buttons*/}
-                        <Fab
-                            color="primary"
-                            aria-label="add"
-                            onClick={handleAddSection}
-                            sx={{
-                                position: "fixed",
-                                bottom: 98,
-                                right: 32,
-                                display: hideUI ? "none" : "block"
-                            }}
-                        >
-                            <AddIcon />
-                        </Fab>
-                        <Fab
-                            color="primary"
-                            aria-label="preview"
-                            onClick={handleShowPreview}
-                            sx={{
-                                position: "fixed",
-                                bottom: 32,
-                                right: 32,
-                                display: hideUI ? "none" : "block"
-
-
-                            }}
-                        >
-                            <VisibilityIcon fontSize="medium" />
-
-                        </Fab>
-                        {/* <Fab
-                            color="secondary"
-                            aria-label="scroll-bottom"
-                            onClick={handleScrollBottom}
-                            sx={{
-                                position: "fixed",
-                                bottom: 32,
-                                right: 32,
-                                zIndex: 9999,
-                            }}
-                        >
-                            <KeyboardArrowDownIcon />
-                        </Fab> */}
 
                         {/* Left buttons */}
-                        <Fab
-                            color="primary"
-                            aria-label="scroll-top"
-                            onClick={handleScrollTop}
-                            sx={{
-                                position: "fixed",
-                                bottom: 100,
-                                left: 32,
-                                zIndex: 9999,
-                                display: hideUI ? "none" : "block"
+                       {/* Scroll to Top */}
+<Fab
+  color="primary"
+  aria-label="scroll-top"
+  onClick={handleScrollTop}
+  sx={{
+    position: "fixed",
+    bottom: 100,
+    left: 32,
+    zIndex: 1300,
+    display: {
+      xs: "none",   // mobile
+      sm: "none",   // tablet
+     md: drawerOpen ? "none" : "flex" // desktop: hide if sidebar open
+    }
+  }}
+>
+  <KeyboardArrowUpIcon />
+</Fab>
 
-                            }}
-                        >
-                            <KeyboardArrowUpIcon />
-                        </Fab>
-
-                        <Fab
-                            color="secondary"
-                            aria-label="scroll-bottom"
-                            onClick={handleScrollBottom}
-                            sx={{
-                                position: "fixed",
-                                bottom: 32,
-                                left: 32,
-                                zIndex: 9999,
-                                display: hideUI ? "none" : "block"
-                            }}
-                        >
-                            <KeyboardArrowDownIcon />
-                        </Fab>
+{/* Scroll to Bottom */}
+<Fab
+  color="secondary"
+  aria-label="scroll-bottom"
+  onClick={handleScrollBottom}
+  sx={{
+    position: "fixed",
+    bottom: 32,
+    left: 32,
+    zIndex: 1300,
+    display: {
+      xs: "none",
+      sm: "none",
+       md: drawerOpen ? "none" : "flex"
+    }
+  }}
+>
+  <KeyboardArrowDownIcon />
+</Fab>
                     </Box>
                 </div>
                 </Fade>
@@ -821,78 +795,78 @@ export default function RunBookEditor() {
                     <div>
                         <StyledPreviewTimeline sections={sections} />
 
-                        <Fab
-                            color="primary"
-                            aria-label="add"
-                            onClick={handleSaveFile}
-                            sx={{
-                                position: "fixed",
-                                bottom: 94,
-                                right: 32,
-                                display: hideUI ? "none" : "block"
-                            }}
-                        >
-                            <SaveIcon />
-                        </Fab>
+                        {/* Right side buttons */}
+{/* Right side buttons */}
+<Fab
+  color="primary"
+  aria-label="save"
+  onClick={handleSaveFile}
+  sx={{
+    position: "fixed",
+    bottom: 94,
+    right: 32,
+    display: hideUI ? "none" : "flex",
+    width: { xs: 38, sm: 56 },      // 38px on mobile, 56px on desktop
+    height: { xs: 38, sm: 56 },
+    minHeight: { xs: 38, sm: 56 },
+  }}
+>
+  <SaveIcon sx={{ fontSize: { xs: 16, sm: 24 } }} />
+</Fab>
 
-                        <Fab
-                            color="primary"
-                            aria-label="add"
-                            onClick={handleShowEdit}
-                            sx={{
-                                position: "fixed",
-                                bottom: 32,
-                                right: 32,
-                                display: hideUI ? "none" : "block"
-                            }}
-                        >
-                            <EditIcon fontSize="medium" />
+<Fab
+  color="primary"
+  aria-label="edit"
+  onClick={handleShowEdit}
+  sx={{
+    position: "fixed",
+    bottom: 32,
+    right: 32,
+    display: hideUI ? "none" : "flex",
+    width: { xs: 38, sm: 56 },
+    height: { xs: 38, sm: 56 },
+    minHeight: { xs: 38, sm: 56 },
+  }}
+>
+  <EditIcon sx={{ fontSize: { xs: 16, sm: 24 } }} />
+</Fab>
 
-                        </Fab>
-                        {/* <Fab
-                            color="secondary"
-                            aria-label="scroll-bottom"
-                            onClick={handleScrollBottom}
-                            sx={{
-                                position: "fixed",
-                                bottom: 32,
-                                right: 32,
-                                zIndex: 9999,
-                            }}
-                        >
-                            <KeyboardArrowDownIcon />
-                        </Fab> */}
+{/* Left side buttons */}
+<Fab
+  color="primary"
+  aria-label="scroll-top"
+  onClick={handleScrollTop}
+  sx={{
+    position: "fixed",
+    bottom: 100,
+    left: 32,
+    zIndex: 9999,
+    display: hideUI ? "none" : "flex",
+    width: { xs: 38, sm: 56 },
+    height: { xs: 38, sm: 56 },
+    minHeight: { xs: 38, sm: 56 },
+  }}
+>
+  <KeyboardArrowUpIcon sx={{ fontSize: { xs: 16, sm: 24 } }} />
+</Fab>
 
-                        {/*left side buttons */}
-                        <Fab
-                            color="primary"
-                            aria-label="scroll-top"
-                            onClick={handleScrollTop}
-                            sx={{
-                                position: "fixed",
-                                bottom: 100,
-                                left: 32,
-                                zIndex: 9999,
-                                display: hideUI ? "none" : "block"
-                            }}
-                        >
-                            <KeyboardArrowUpIcon />
-                        </Fab>
-
-                        <Fab
-                            color="secondary"
-                            aria-label="scroll-bottom"
-                            onClick={handleScrollBottom}
-                            sx={{
-                                position: "fixed",
-                                bottom: 32,
-                                left: 32,
-                                zIndex: 9999,
-                                display: hideUI ? "none" : "block"
-                            }}
-                        >
-                            <KeyboardArrowDownIcon />
-                        </Fab>
+<Fab
+  color="secondary"
+  aria-label="scroll-bottom"
+  onClick={handleScrollBottom}
+  sx={{
+    position: "fixed",
+    bottom: 32,
+    left: 32,
+    zIndex: 9999,
+    display: hideUI ? "none" : "flex",
+    width: { xs: 38, sm: 56 },
+    height: { xs: 38, sm: 56 },
+    minHeight: { xs: 38, sm: 56 },
+  }}
+>
+  <KeyboardArrowDownIcon sx={{ fontSize: { xs: 16, sm: 24 } }} />
+</Fab>
                     </div>
                     </Fade>
 

@@ -392,7 +392,6 @@ export default function ImageSnipManagerTable({ userLoggedIn }) {
                                     },
                                 }}
                             />
-
                         </>
 
                     );
