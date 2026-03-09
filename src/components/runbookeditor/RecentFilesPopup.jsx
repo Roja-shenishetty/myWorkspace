@@ -27,7 +27,7 @@ function formatDateTime(dateString) {
     return d.toLocaleString();
 }
 
-export default function RecentFilesPopup({ recentFiles = [], onFileLoad, onUpdateRecentFiles }) {
+function RecentFilesPopup({ recentFiles = [], onFileLoad, onUpdateRecentFiles }) {
    
     const [anchorEl, setAnchorEl] = useState(null);
     const [infoAnchorEl, setInfoAnchorEl] = useState(null);
@@ -112,7 +112,7 @@ export default function RecentFilesPopup({ recentFiles = [], onFileLoad, onUpdat
   aria-label="recent files"
   onClick={handleClick}
   sx={{
-    width: { xs: 26, sm: 38 },
+   width: { xs: 26, sm: 38 },
   height: { xs: 26, sm: 38 },
   minHeight: "unset",
   backgroundColor: "#f9fafb",
@@ -129,7 +129,7 @@ export default function RecentFilesPopup({ recentFiles = [], onFileLoad, onUpdat
   },
   }}
 >
-  <HistoryIcon />
+  <HistoryIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
 </Fab>
 </Tooltip>
             <Popover
@@ -239,3 +239,4 @@ export default function RecentFilesPopup({ recentFiles = [], onFileLoad, onUpdat
         </>
     );
 }
+export default RecentFilesPopup;

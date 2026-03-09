@@ -236,7 +236,7 @@ export default function YouTubeUploaderFab() {
             <Fab
   onClick={handleFabClick}
   sx={{
-    width: { xs: 26, sm: 38 },
+     width: { xs: 26, sm: 38 },
   height: { xs: 26, sm: 38 },
   minHeight: "unset",
   backgroundColor: "#f9fafb",
@@ -254,8 +254,8 @@ export default function YouTubeUploaderFab() {
   }}
 >
   {['done', 'failed', 'polling_stopped'].includes(uploadState)
-    ? <ReplayIcon />
-    : <YouTubeIcon />
+    ? <ReplayIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
+    : <YouTubeIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
   }
 </Fab>
 </Tooltip>

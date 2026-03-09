@@ -117,7 +117,7 @@ function TimeSlider({ label, value, onChange }) {
         onChange={(val) => onChange("timeToRead", val)}
       />
       <TimeSlider
-        label="Time to Run"
+        label="Time to Execute"
         value={timeToRun}
         onChange={(val) => onChange("timeToRun", val)}
       />

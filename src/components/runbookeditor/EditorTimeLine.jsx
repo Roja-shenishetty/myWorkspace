@@ -121,8 +121,6 @@ const minimalFab = {
 
 export default function EditorTimeline({
     sections,
-    tab,
-    setTab,
     onChange,
     onDelete,
     handleCloneSection,
@@ -135,18 +133,6 @@ export default function EditorTimeline({
     selectedTabs, // New prop
     onSelectedTabChange, // New callback prop
     hideUI,
-    handleSaveFile,
-    handleFavouriteSelect,
-    defaultFavouritesUrl,
-    handleShowPreview,
-    handleShowEdit,
-    handleClearLocal,
-    recentFiles,
-    handleLoadRecentFile,
-    updateRecentFiles,
-    handleLoadSectionsJSON,
-    currentFileName,
-    handleAddSection
 }) {
 
 
@@ -347,118 +333,16 @@ const fileInputRef = useRef(null);
 
     return (
         <>
-    <Paper
-  elevation={0}
-  sx={{
-    width: "100%",
-    borderRadius: "3px",
-    backgroundColor: "#ffffff",
-    border: "1px solid #e5e7eb",
-    boxShadow: "0 6px 24px rgba(0,0,0,0.04)",
-    p: 0.5,
-    position:"sticky",
-    top:"56px",           // ✅ IMPORTANT
-    zIndex: 1000,          // stay above sections
-  }}
->
-    <Stack
-  direction="row"
-    alignItems="center"
-    sx={{
-      width: "100%",
-      justifyContent: "space-between", // <-- push left/right groups to edges
-    }}
->
-                 {/* ========== FILE GROUP ========== */}
-<Box sx={{display: "flex", gap: 1.2, alignItems: "center" }}>
-    <Tooltip title="Import JSON" arrow>
-  <Fab component="label" sx={minimalFab}>
-    <FolderOpenIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
-    <input
-      type="file"
-      accept="application/json"
-      hidden
-      onChange={handleLoadSectionsJSON}
-    />
-  </Fab>
-</Tooltip>
-
-   <Tooltip title="Save (Ctrl+S)" arrow>
-  <Fab
-   onClick={handleSaveFile ?? (() => {})}
-    sx= {minimalFab}
-  >
-    <SaveIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
-  </Fab>
-</Tooltip>
-
-    <Divider orientation="vertical" flexItem />
-
-    {/* ========== MEDIA GROUP ========== */}
-
-    <ScreenRecorderFab position="static"></ScreenRecorderFab>
-    <YouTubeUploaderFab/>
-
-    <Divider orientation="vertical" flexItem />
-
-    {/* ========== SYSTEM GROUP ========== */}
-
-    <RecentFilesPopup
-      recentFiles={recentFiles}
-      onFileLoad={handleLoadRecentFile}
-      onUpdateRecentFiles={updateRecentFiles}
-    />
-    <ClearLocalStorageWithConfirm onClear={handleClearLocal}/>
-
-    {/* Right side buttons with tooltip and minimalFab style */}
-     <Divider orientation="vertical" flexItem />
-<Tooltip title="Add Section" arrow>
-  <Fab
-    color="primary"
-    onClick={handleAddSection}
-    sx={minimalFab}
-  >
-    <AddIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
-  </Fab>
-</Tooltip>
-
-<Tooltip title="Preview" arrow>
-  <Fab
-    color="primary"
-    onClick={handleShowPreview}
-    sx={minimalFab}
-  >
-    <VisibilityIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
-  </Fab>
-</Tooltip>
-</Box>
-
-  </Stack>
-<SectionNavigationBar
-  displayMode={displayMode}
-  setDisplayMode={setDisplayMode}
-  sections={sections}
-  hideUI={hideUI}
-  selectedHorizontalSection={selectedHorizontalSection}
-  handleNavigate={handleNavigate}
-/>
-
-</Paper>
-            <Box mt={0} sx={{ width: "100%", mt: hideUI ? 2 : 5 }}>
-               <Typography
-    variant="h6" // or h5 for slightly larger
-    sx={{
-      px: 1,                // horizontal padding
-      py: 1,                // vertical padding
-      mb: 3,                // margin-bottom to separate from timeline
-      borderRadius: 1,      // rounded corners
-      bgcolor: "#f3f4f6",   // light gray background
-      color: "#111827",     // dark text color
-      fontWeight: 600,      // semi-bold
-      boxShadow: "0 2px 6px rgba(0,0,0,0.05)", // subtle shadow
-    }}
-  >{currentFileName || "Runbook Editor"}
-  </Typography>
+  <SectionNavigationBar
+    displayMode={displayMode}
+    setDisplayMode={setDisplayMode}
+    sections={sections}
+    hideUI={hideUI}
+    selectedHorizontalSection={selectedHorizontalSection}
+    handleNavigate={handleNavigate}
+  />
+  <Box sx={{width: "100%"}}>
+         
   
   {displayMode === "vertical" && (
                      <Timeline
@@ -492,7 +376,9 @@ const fileInputRef = useRef(null);
                                    <Card
   elevation={0}
   sx={{
-    border: "1px solid #e5e7eb",
+    m: 0, 
+    borderTop: "1px solid #e5e7eb",
+    borderBottom:"1px solid #e5e7eb",
     borderRadius: "2px",
     transition: "all 0.2s ease",
     "&:hover": {
@@ -505,18 +391,16 @@ const fileInputRef = useRef(null);
                                             <Box>
                                                 <Box display="flex" alignItems="left" gap={2} mb={2} width={"100%"}>
                                                     {/* Section Info  */}
-
                                                     <TextField
-                                                        label={<Chip size="large" sx={{ m: 0, p: 2, fontSize: "1.1em", width: "100%" }} label={`#${section.order}`}></Chip>}
+                                                        label={<Chip size="large" sx={{ m: 0, p: 2, fontSize: "1.1em", width: "100%" }}  label={`#${idx + 1}`}></Chip>}
                                                         variant="standard"
                                                         sx={{ p: 2, minWidth: "200px" }}
                                                         fullWidth
                                                         value={section.title}
                                                         onChange={(e) =>
                                                             onChange(section.id, "title", null, e.target.value)
-                                                        }
+                                                        }   
                                                     />
-
                                                 </Box>
                                                 <Box display="flex" alignItems="center" gap={1} mb={2} width={"100%"}>
                                                     {/*Section tools */}
@@ -583,8 +467,9 @@ const fileInputRef = useRef(null);
 
                                             {/* Section Description */}
                                             <Box mt={3} sx={{ maxWidth: "90vw" }}>
-                                                <Chip sx={{ mb: 2 }} label={<Typography variant="subtitle2" >Content / Description</Typography>} />
+                                                <Chip sx={{ mb: 2 }} label={<Typography variant="subtitle2" >Content</Typography>} />
                                                 <MarkdownEditorWithToolbar sx={{ mb: 12, width: "100%" }}
+                                                 
                                                     content={section.description}
                                                     onChange={(val) => onChange(section.id, "description", null, val)}
                                                 />
@@ -592,7 +477,7 @@ const fileInputRef = useRef(null);
 
                                             {/* =================== CODE FILES =================== */}
                                             <Box mt={3} sx={{ maxWidth: "1100px" }}>
-                                                <Chip label={<Typography variant="subtitle2"> Notes / Code / Resource Files :</Typography>} />
+                                                <Chip label={<Typography variant="subtitle2">Resource Files</Typography>} />
                                                 <Tabs
                                                     variant="scrollable"
                                                     scrollButtons="auto"
@@ -861,10 +746,15 @@ const fileInputRef = useRef(null);
                                                                 borderRadius: 4,
                                                             }}
                                                         >
-                                                            <Box sx={{ display: "flex" }}>
+                                                            <Box sx={{ display: "flex",
+    alignItems: "center",
+    gap: 1,
+    mb: 2 }}>
                                                                 <TextField
-                                                                    fullWidth
-                                                                    label="Description"
+                                                                   fullWidth
+  size="small"
+  placeholder="Description"
+  label={null}
                                                                     value={description}
                                                                     onChange={(e) =>
                                                                         handleLocalMediaChange(
@@ -874,12 +764,23 @@ const fileInputRef = useRef(null);
                                                                             e.target.value
                                                                         )
                                                                     }
-                                                                    sx={{ mb: 2 }}
+                                                                     sx={{
+    "& .MuiOutlinedInput-root": {
+      height: 36
+    },
+    "& .MuiOutlinedInput-input": {
+      height: 36,
+      lineHeight: "36px",
+      padding: "0 10px"
+    }
+  }}
                                                                 />
                                                                 {localEdit && (
                                                                     <Button
                                                                         size="small"
-                                                                        sx={{ mb: 1, p: 0, m: 0 }}
+                                                                        sx={{ height: 36,
+        px: 2,
+        whiteSpace: "nowrap"}}
                                                                         variant="contained"
                                                                         color="primary"
                                                                         onClick={() => handleSaveMedia(section.id, file.id)}
@@ -912,6 +813,7 @@ const fileInputRef = useRef(null);
                                             </Box>
                                         </CardContent>
                                     </Card>
+                                 
                                 </TimelineContent>
                             </TimelineItem>
                         ))}
@@ -1054,7 +956,7 @@ const fileInputRef = useRef(null);
 
                                                     {/* =================== CODE FILES =================== */}
                                                     <Box mt={3} sx={{ maxWidth: "1100px" }}>
-                                                        <Chip label={<Typography variant="subtitle2"> Notes / Code / Resource Files :</Typography>} />
+                                                        <Chip label={<Typography variant="subtitle2">Resource Files</Typography>} />
                                                         <Tabs
                                                             variant="scrollable"
                                                             scrollButtons="auto"

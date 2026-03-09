@@ -153,7 +153,6 @@ const initialSections2 = [
 const handleScrollTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 };
-
 const handleScrollBottom = () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 };
@@ -178,7 +177,15 @@ const loadRecentFiles = () => {
     } catch { }
     return [];
 };
-
+const scrollFabStyle = {
+  position: "fixed",
+  left: { xs: 12, sm: 32 },
+  width: { xs: 38, sm: 56 },
+  height: { xs: 38, sm: 56 },
+  minHeight: { xs: 38, sm: 56 },
+  display: "flex",
+  zIndex: 9999
+};
 
 
 export default function RunBookEditor() {
@@ -669,12 +676,31 @@ export default function RunBookEditor() {
         setRecentFiles(updatedFiles);
         localStorage.setItem(RECENT_FILES_KEY, JSON.stringify(updatedFiles));
     };
-
      return (
         
         <div className="flex min-h-screen flex-col h-full w-full bg-gray-100">
             
-            <FileAppBar drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} setHideUI={setHideUI} hideUI={hideUI} onOpenFile={handleOpenFile} onSaveFile={() => handleSaveSectionsJSON(sections)}></FileAppBar>
+            <FileAppBar 
+  drawerOpen={drawerOpen} 
+  setDrawerOpen={setDrawerOpen}
+  setHideUI={setHideUI}
+  hideUI={hideUI}
+  currentFileName={currentFileName}
+sectionRefs={sectionRefs}
+handleLoadSectionsJSON={handleLoadSectionsJSON}
+  handleSaveFile={handleSaveFile}
+  handleAddSection={handleAddSection}
+  handleShowPreview={handleShowPreview}
+  handleShowEdit={handleShowEdit}
+tab={tab}
+  onReorderCodeFile={(sectionId, fileId, direction) =>
+    handleReorderFile(sectionId, "codeFiles", fileId, direction)
+  }
+
+  onReorderMediaFile={(sectionId, mediaId, direction) =>
+    handleReorderFile(sectionId, "mediaFiles", mediaId, direction)
+  }
+/>
              {/* Hidden file input */}
     <input
       type="file"
@@ -683,36 +709,37 @@ export default function RunBookEditor() {
       accept=".json"
       onChange={handleOpenFile}
     />
-             <Box sx={{ height: 40, display: hideUI ? "none" : "block" }} /> 
-            
+         <Box
+  sx={{
+    height: {sm: 36, md: 40 },
+    display: { xs: "none", sm: hideUI ? "none" : "block" }
+  }}
+/>
             <Container
                 sx={{
                     width: "100%",
                     mx: "auto",
                     py: 2,
-                    px: 2, // Add some horizontal padding
+                    px:0, // Add some horizontal padding
                     background: "#fff",
                     borderRadius: 1,
                     boxShadow: 2,
                     border: "1px solid #e5e7eb",
-                    mt: 1,
                     minHeight: "88vh",
                     display: "flex",
                     flexDirection: "column",
                     overflowX: "visible",
                     alignItems: "stretch",
                     justifyContent: "flex-start",
-                    
                 }}
             //maxWidth={false} // REMOVED to enforce the maxWidth above
             >
                 <Fade in={tab === 0} timeout={300} unmountOnExit>
                     <div>
                     <Box sx={{ width: "100%" }}>
-                        <EditorTimeLine sx={{ width: "95%" }}
+                        <EditorTimeLine sx={{ width: "100%" }}
                             hideUI={hideUI} // <--- Pass the prop here
                             sections={sections}
-                            currentFileName={currentFileName}
                             tab={tab}
                             setTab={setTab}
                             sectionRefs={sectionRefs}
@@ -723,12 +750,7 @@ export default function RunBookEditor() {
                             onDelete={handleDelete}
                             onAddCodeFile={handleAddCodeFile}
                             onAddMediaFile={handleAddMediaFile}
-                            handleLoadSectionsJSON={handleLoadSectionsJSON}
-   handleSaveFile={handleSaveFile}
    selectedTabs={selectedTabs}
-   handleAddSection={handleAddSection}
-   handleShowEdit={handleShowEdit}
-   handleShowPreview={handleShowPreview}
                             onReorderCodeFile={(sectionId, fileId, direction) =>
                                 handleReorderFile(sectionId, "codeFiles", fileId, direction)
                             }
@@ -747,46 +769,6 @@ export default function RunBookEditor() {
                             }}
                         />
 
-                        {/* Left buttons */}
-                       {/* Scroll to Top */}
-<Fab
-  color="primary"
-  aria-label="scroll-top"
-  onClick={handleScrollTop}
-  sx={{
-    position: "fixed",
-    bottom: 100,
-    left: 32,
-    zIndex: 1300,
-    display: {
-      xs: "none",   // mobile
-      sm: "none",   // tablet
-     md: drawerOpen ? "none" : "flex" // desktop: hide if sidebar open
-    }
-  }}
->
-  <KeyboardArrowUpIcon />
-</Fab>
-
-{/* Scroll to Bottom */}
-<Fab
-  color="secondary"
-  aria-label="scroll-bottom"
-  onClick={handleScrollBottom}
-  sx={{
-    position: "fixed",
-    bottom: 32,
-    left: 32,
-    zIndex: 1300,
-    display: {
-      xs: "none",
-      sm: "none",
-       md: drawerOpen ? "none" : "flex"
-    }
-  }}
->
-  <KeyboardArrowDownIcon />
-</Fab>
                     </Box>
                 </div>
                 </Fade>
@@ -794,83 +776,33 @@ export default function RunBookEditor() {
                 <Fade in={tab === 1} timeout={300} unmountOnExit>
                     <div>
                         <StyledPreviewTimeline sections={sections} />
-
-                        {/* Right side buttons */}
-{/* Right side buttons */}
-<Fab
-  color="primary"
-  aria-label="save"
-  onClick={handleSaveFile}
-  sx={{
-    position: "fixed",
-    bottom: 94,
-    right: 32,
-    display: hideUI ? "none" : "flex",
-    width: { xs: 38, sm: 56 },      // 38px on mobile, 56px on desktop
-    height: { xs: 38, sm: 56 },
-    minHeight: { xs: 38, sm: 56 },
-  }}
->
-  <SaveIcon sx={{ fontSize: { xs: 16, sm: 24 } }} />
-</Fab>
-
-<Fab
-  color="primary"
-  aria-label="edit"
-  onClick={handleShowEdit}
-  sx={{
-    position: "fixed",
-    bottom: 32,
-    right: 32,
-    display: hideUI ? "none" : "flex",
-    width: { xs: 38, sm: 56 },
-    height: { xs: 38, sm: 56 },
-    minHeight: { xs: 38, sm: 56 },
-  }}
->
-  <EditIcon sx={{ fontSize: { xs: 16, sm: 24 } }} />
-</Fab>
-
-{/* Left side buttons */}
-<Fab
+                    </div>
+                    </Fade>
+            </Container>
+                    <Fab
   color="primary"
   aria-label="scroll-top"
   onClick={handleScrollTop}
   sx={{
-    position: "fixed",
-    bottom: 100,
-    left: 32,
-    zIndex: 9999,
-    display: hideUI ? "none" : "flex",
-    width: { xs: 38, sm: 56 },
-    height: { xs: 38, sm: 56 },
-    minHeight: { xs: 38, sm: 56 },
+    ...scrollFabStyle,
+    bottom: { xs: 80, sm: 100 },
+    zIndex: (theme) => theme.zIndex.drawer + 2
   }}
 >
   <KeyboardArrowUpIcon sx={{ fontSize: { xs: 16, sm: 24 } }} />
 </Fab>
-
 <Fab
   color="secondary"
   aria-label="scroll-bottom"
   onClick={handleScrollBottom}
   sx={{
-    position: "fixed",
-    bottom: 32,
-    left: 32,
-    zIndex: 9999,
-    display: hideUI ? "none" : "flex",
-    width: { xs: 38, sm: 56 },
-    height: { xs: 38, sm: 56 },
-    minHeight: { xs: 38, sm: 56 },
+    ...scrollFabStyle,
+    bottom: { xs: 16, sm: 32 },
+    zIndex: (theme) => theme.zIndex.drawer + 2
   }}
 >
   <KeyboardArrowDownIcon sx={{ fontSize: { xs: 16, sm: 24 } }} />
 </Fab>
-                    </div>
-                    </Fade>
-
-            </Container>
 
         </div >
     );

@@ -123,7 +123,7 @@ export default function ScreenRecorder({ onUpload, position = 'fixed' }) {
   },
   }}
 >
-  {status === "recording" ? <StopCircleIcon /> : <VideocamIcon />}
+  {status === "recording" ? <StopCircleIcon sx={{ fontSize: { xs: 16, sm: 18 } }}/> : <VideocamIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />}
 </Fab>
 </Tooltip>
                 {/* --- Recording Controls Strip --- */}

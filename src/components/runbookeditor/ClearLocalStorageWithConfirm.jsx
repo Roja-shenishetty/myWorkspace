@@ -47,7 +47,7 @@ export default function ClearLocalStorageWithConfirm({ onClear }) {
   },
   }}
 >
-  <RestartAlt />
+ <RestartAlt sx={{ fontSize: { xs: 16, sm: 18 } }} />
 </Fab>
 </Tooltip>
       <Popover
