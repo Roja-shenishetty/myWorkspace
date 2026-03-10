@@ -35,7 +35,7 @@ export default function StyledPreviewTimeline({ sections }) {
           </div>
 
           {/* Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-10 lg:ml-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-10 lg:ml-12 m-2">
             {/* Left column: Title & description */}
             <div className="col-span-5 ml-12 lg:ml-0">
               <h3 className="mt-0 text-gray-800 text-base font-semibold">
@@ -68,7 +68,7 @@ export default function StyledPreviewTimeline({ sections }) {
               {section.codeFiles?.length > 0 && (
                 <div>
                   {/* Tabs for filenames */}
-                  <div className="flex space-x-2 mb-2">
+                  <div className="flex space-x-2 mb-2 mt-6">
                     {section.codeFiles.map((file, fIdx) => (
                       <button
                         key={file.id}
@@ -108,7 +108,7 @@ export default function StyledPreviewTimeline({ sections }) {
               {/* ================= MEDIA FILES ================= */}
               {section.mediaFiles?.length > 0 && (
                 <div>
-                  <div className="flex space-x-2 mb-2">
+                  <div className="flex space-x-2 mb-2 mt-2">
                     {section.mediaFiles.map((media, mIdx) => (
                       <button
                         key={media.id}

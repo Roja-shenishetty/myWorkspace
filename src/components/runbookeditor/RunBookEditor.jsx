@@ -14,23 +14,11 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import useGlobalHotkeys from './useGlobalHotKeys'
 
 import StyledPreviewTimeline from './StyledPreviewTimeline'
-import SaveIcon from '@mui/icons-material/Save';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-
 import FileAppBar from "../shared/FileAppBar/FileAppBar";
 import FavouritesPopup from "../shared/FavouritesTree/FavouritesPopup";
 import EditorTimeLine from "./EditorTimeLine";
 import { v4 as uuidv4 } from "uuid";
-import YouTubeUploader from "../shared/YouTubeUploader/YouTubeUploader";
-import ScreenRecorder from "../shared/ScreenRecorder/ScreenRecorder";
-import ScreenRecorderFab from "../shared/ScreenRecorder/ScreenRecorderFab";
-import YouTubeUploaderFab from "../shared/YouTubeUploader/YouTubeUploaderFab";
-import RestartAltIcon from '@mui/icons-material/RestartAlt'
-import ClearLocalStorageWithConfirm from "./ClearLocalStorageWithConfirm";
-import RecentFilesPopup from "./RecentFilesPopup";
-import ScreenCameraRecorderFab from "../shared/CameraRecorder/ScreenCameraRecorderFab";
-import { Fade } from "@mui/material";
-
+import titles from "../../../data/titles.json";
 
 // Your default favourites file, e.g., a raw link from a GitHub repo
 const defaultFavouritesUrl = "https://raw.githubusercontent.com/venkatparsi/ilearn-course-sweng-js-ts-react-python-django/refs/heads/master/course/table-of-contents.json";
@@ -52,7 +40,6 @@ Sample Code Block
 \`Code\` is used like this.
 <p> This is a paragraph</p>
 `
-
 
 const initialSections = [
     {
@@ -177,16 +164,6 @@ const loadRecentFiles = () => {
     } catch { }
     return [];
 };
-const scrollFabStyle = {
-  position: "fixed",
-  left: { xs: 12, sm: 32 },
-  width: { xs: 38, sm: 56 },
-  height: { xs: 38, sm: 56 },
-  minHeight: { xs: 38, sm: 56 },
-  display: "flex",
-  zIndex: 9999
-};
-
 
 export default function RunBookEditor() {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -678,7 +655,7 @@ export default function RunBookEditor() {
     };
      return (
         
-        <div className="flex min-h-screen flex-col h-full w-full bg-gray-100">
+         <div className="flex flex-col w-full bg-gray-100">
             
             <FileAppBar 
   drawerOpen={drawerOpen} 
@@ -725,7 +702,7 @@ tab={tab}
                     borderRadius: 1,
                     boxShadow: 2,
                     border: "1px solid #e5e7eb",
-                    minHeight: "88vh",
+                    minHeight: "88dvh",
                     display: "flex",
                     flexDirection: "column",
                     overflowX: "visible",
@@ -734,77 +711,117 @@ tab={tab}
                 }}
             //maxWidth={false} // REMOVED to enforce the maxWidth above
             >
-                <Fade in={tab === 0} timeout={300} unmountOnExit>
-                    <div>
-                    <Box sx={{ width: "100%" }}>
-                        <EditorTimeLine sx={{ width: "100%" }}
-                            hideUI={hideUI} // <--- Pass the prop here
-                            sections={sections}
-                            tab={tab}
-                            setTab={setTab}
-                            sectionRefs={sectionRefs}
-                            handleCloneSection={handleCloneSection}
-                            handlePasteSection={handlePasteSection}
-                            duplicateSection={duplicateSection}
-                            onChange={handleChange}
-                            onDelete={handleDelete}
-                            onAddCodeFile={handleAddCodeFile}
-                            onAddMediaFile={handleAddMediaFile}
-   selectedTabs={selectedTabs}
-                            onReorderCodeFile={(sectionId, fileId, direction) =>
-                                handleReorderFile(sectionId, "codeFiles", fileId, direction)
-                            }
-                            onReorderMediaFile={(sectionId, mediaId, direction) =>
-                                handleReorderFile(sectionId, "mediaFiles", mediaId, direction)
-                            }
-                            
-                            onSelectedTabChange={(sectionId, tabType, newIndex) => {
-                                setSelectedTabs((prev) => ({
-                                    ...prev,
-                                    [tabType]: {
-                                        ...prev[tabType],
-                                        [sectionId]: newIndex,
-                                    },
-                                }));
-                            }}
-                        />
-
-                    </Box>
-                </div>
-                </Fade>
-
-                <Fade in={tab === 1} timeout={300} unmountOnExit>
-                    <div>
-                        <StyledPreviewTimeline sections={sections} />
-                    </div>
-                    </Fade>
-            </Container>
-                    <Fab
-  color="primary"
-  aria-label="scroll-top"
-  onClick={handleScrollTop}
-  sx={{
-    ...scrollFabStyle,
-    bottom: { xs: 80, sm: 100 },
-    zIndex: (theme) => theme.zIndex.drawer + 2
+                
+                                {tab === 0 && (
+                                    <Box sx={{ width: "100%" }}>
+                                        <EditorTimeLine sx={{ width: "95%" }}
+                                            hideUI={hideUI} // <--- Pass the prop here
+                                            sections={sections}
+                                            sectionRefs={sectionRefs}
+                                            handleCloneSection={handleCloneSection}
+                                            handlePasteSection={handlePasteSection}
+                                            duplicateSection={duplicateSection}
+                                            onChange={handleChange}
+                                            onDelete={handleDelete}
+                                            onAddCodeFile={handleAddCodeFile}
+                                            onAddMediaFile={handleAddMediaFile}
+                                            onReorderCodeFile={(sectionId, fileId, direction) =>
+                                                handleReorderFile(sectionId, "codeFiles", fileId, direction)
+                                            }
+                                            onReorderMediaFile={(sectionId, mediaId, direction) =>
+                                                handleReorderFile(sectionId, "mediaFiles", mediaId, direction)
+                                            }
+                                            selectedTabs={selectedTabs}
+                                            onSelectedTabChange={(sectionId, tabType, newIndex) => {
+                                                setSelectedTabs((prev) => ({
+                                                    ...prev,
+                                                    [tabType]: {
+                                                        ...prev[tabType],
+                                                        [sectionId]: newIndex,
+                                                    },
+                                                }));
+                                            }}
+                                        />
+                
+                                        <Fab
+                                            color="primary"
+                                            aria-label="scroll-top"
+                                            onClick={handleScrollTop}
+                                           sx={{
+    position: "fixed",
+    bottom: { xs: 90, sm: 100 },
+    left: { xs: 16, sm: 32 },
+    zIndex: 9999,
+    display: hideUI || drawerOpen ? "none" : "flex",
+    width: { xs: 36, sm: 48 },
+    height: { xs: 36, sm: 48 }
   }}
->
-  <KeyboardArrowUpIcon sx={{ fontSize: { xs: 16, sm: 24 } }} />
-</Fab>
-<Fab
-  color="secondary"
-  aria-label="scroll-bottom"
-  onClick={handleScrollBottom}
-  sx={{
-    ...scrollFabStyle,
-    bottom: { xs: 16, sm: 32 },
-    zIndex: (theme) => theme.zIndex.drawer + 2
+                                        >
+                                            <KeyboardArrowUpIcon />
+                                        </Fab>
+                
+                                        <Fab
+                                            color="secondary"
+                                            aria-label="scroll-bottom"
+                                            onClick={handleScrollBottom}
+                                            sx={{
+    position: "fixed",
+    bottom: { xs: 20, sm: 32 },
+    left: { xs: 16, sm: 32 },
+    zIndex: 9999,
+    display: hideUI || drawerOpen ? "none" : "flex",
+    width: { xs: 36, sm: 48 },
+    height: { xs: 36, sm: 48 }
   }}
->
-  <KeyboardArrowDownIcon sx={{ fontSize: { xs: 16, sm: 24 } }} />
-</Fab>
-
-        </div >
-    );
-}
-    
+                                        >
+                                            <KeyboardArrowDownIcon />
+                                        </Fab>
+                                    </Box>
+                                )}
+                
+                                {tab === 1 &&
+                                    (<Box sx={{width: "100%" }}>
+                                        <StyledPreviewTimeline sections={sections} />
+                
+                                        {/*left side buttons */}
+                                        <Fab
+                                            color="primary"
+                                            aria-label="scroll-top"
+                                            onClick={handleScrollTop}
+                                           sx={{
+    position: "fixed",
+    bottom: { xs: 90, sm: 100 },
+    left: { xs: 16, sm: 32 },
+    zIndex: 9999,
+    display: hideUI || drawerOpen ? "none" : "flex",
+    width: { xs: 36, sm: 48 },
+    height: { xs: 36, sm: 48 }
+  }}
+                                        >
+                                            <KeyboardArrowUpIcon />
+                                        </Fab>
+                
+                                        <Fab
+                                            color="secondary"
+                                            aria-label="scroll-bottom"
+                                            onClick={handleScrollBottom}
+                                            sx={{
+    position: "fixed",
+    bottom: { xs: 20, sm: 32 },
+    left: { xs: 16, sm: 32 },
+    zIndex: 9999,
+    display: hideUI || drawerOpen ? "none" : "flex",
+    width: { xs: 36, sm: 48 },
+    height: { xs: 36, sm: 48 }
+  }}
+                                        >
+                                            <KeyboardArrowDownIcon />
+                                        </Fab>
+                                    </Box>
+                                    )}
+                
+                            </Container>
+                
+                        </div >
+                    );
+                }

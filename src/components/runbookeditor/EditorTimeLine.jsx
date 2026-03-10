@@ -948,7 +948,7 @@ const fileInputRef = useRef(null);
 
 
                                                     {/* Section Description */}
-                                                    <Chip sx={{ mb: 2 }} label={<Typography variant="subtitle2" >Content / Description</Typography>} />
+                                                    <Chip sx={{ mb: 2 }} label={<Typography variant="subtitle2" >Content</Typography>} />
                                                     <MarkdownEditorWithToolbar
                                                         content={section.description}
                                                         onChange={(val) => onChange(section.id, "description", null, val)}
@@ -1024,7 +1024,6 @@ const fileInputRef = useRef(null);
                                                             />
                                                         </Tabs>
                                                         <br />
-
                                                         {section?.codeFiles?.map((file, fileIdx) => {
                                                             const unsaved = isFileUnsaved(section.id, file.id, file.content);
                                                             const content =

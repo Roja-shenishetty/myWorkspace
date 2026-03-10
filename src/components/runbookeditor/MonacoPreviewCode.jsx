@@ -138,7 +138,7 @@ export default function MonacoPreviewCode({ code, language }) {
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
-
+      
       <Editor
         height={expanded ? "60vh" : "300px"}
         language={language === "jinja2" ? "html" : language}

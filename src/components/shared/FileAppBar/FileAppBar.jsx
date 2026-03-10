@@ -40,6 +40,7 @@ import YouTubeUploader from "../YouTubeUploader/YouTubeUploader";
 import YouTubeUploaderFab from "../YouTubeUploader/YouTubeUploaderFab";
 
 import ScreenCameraRecorderFab from "../CameraRecorder/ScreenCameraRecorderFab";
+import titles from "../../../../data/titles.json";
 import {
   List,
   ListItemButton,

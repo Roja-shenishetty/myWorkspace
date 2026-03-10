@@ -1,0 +1,12 @@
+{
+  "pages": {
+    "runbookEditor": {
+      "title": "runbook.json",
+      "sections": {
+        "metadata": "Metadata",
+        "content": "Content",
+        "preview": "Preview"
+      }
+    }
+  }
+}
