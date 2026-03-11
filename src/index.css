@@ -38,3 +38,13 @@
   background-color: #FFCC80;
 }
 }
+
+/*This is the css of media files scrolling in preview mode*/
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

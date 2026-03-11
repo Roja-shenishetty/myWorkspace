@@ -56,9 +56,9 @@ const initialMetadata = {
     subject: "",
     filename: "runbook"
 };
-const minimalFab = {
-  width: { xs: 26, sm: 38 },
-  height: { xs: 26, sm: 38 },
+export const minimalFab = {
+  width: { xs: 28, sm: 38 },
+  height: { xs: 28, sm: 38 },
   minHeight: "unset",
   backgroundColor: "#ffffff",
   color: "#374151",
@@ -161,7 +161,7 @@ const sideIcons = {
   {drawerOpen ? <CloseIcon /> : <MenuIcon />}
 </IconButton>
                  {/* ========== FILE GROUP ========== */}
-<Box sx={{display: "flex", gap: 0.8, alignItems: "center" }}>
+<Box sx={{display: "flex", gap: 0.6, alignItems: "center" }}>
     <Tooltip title="Import JSON" arrow>
   <Fab component="label" sx={minimalFab}>
     <FolderOpenIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />
@@ -187,8 +187,8 @@ const sideIcons = {
 
     {/* ========== MEDIA GROUP ========== */}
 
-    <ScreenRecorderFab position="static"></ScreenRecorderFab>
-    <YouTubeUploaderFab/>
+    <ScreenRecorderFab minimalFab={minimalFab} position="static"></ScreenRecorderFab>
+    <YouTubeUploaderFab minimalFab={minimalFab}/>
 
     <Divider orientation="vertical" flexItem />
 
@@ -198,8 +198,9 @@ const sideIcons = {
       recentFiles={recentFiles}
       onFileLoad={handleLoadRecentFile}
       onUpdateRecentFiles={updateRecentFiles}
+      minimalFab={minimalFab}
     />
-    <ClearLocalStorageWithConfirm onClear={handleClearLocal}/>
+    <ClearLocalStorageWithConfirm onClear={handleClearLocal} minimalFab={minimalFab}/>
 
     {/* Right side buttons with tooltip and minimalFab style */}
      <Divider orientation="vertical" flexItem />

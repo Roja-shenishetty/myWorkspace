@@ -152,11 +152,12 @@ export default function UrlDropPreviewCard({
       )}
 
       {printMode && (
-        <>      <Typography variant="caption" color="textPrimary" mt={1}>
-          {droppedUrl || 'No URL Dropped'}
-        </Typography>
-          <hr />
-          <Typography variant="caption" color="textPrimary" mt={1}>
+        <>
+        {/* //  <Typography variant="caption" color="textPrimary" mt={1}>
+        //   {droppedUrl || 'No URL Dropped'}
+        // </Typography>
+        //   <hr /> */}
+          <Typography variant="caption" color="textPrimary">
             Description: {description}
           </Typography>
         </>

@@ -54,18 +54,7 @@ import UrlDropPreviewCard from "../shared/UrlDropPreviewCard/UrlDropPreviewCard"
 import SectionNavigationBar from "./SectionNavigationBar";
 import TeachingPlanEditor from "./TeachingPlanEditor";
 import TimePopupButton from "./TimePopupButton";
-import FileAppBar from "../shared/FileAppBar/FileAppBar";
-import FavouritesPopup from "../shared/FavouritesTree/FavouritesPopup";
-import EditorTimeLine from "./EditorTimeLine";
-import YouTubeUploader from "../shared/YouTubeUploader/YouTubeUploader";
-import ScreenRecorder from "../shared/ScreenRecorder/ScreenRecorder";
-import ScreenRecorderFab from "../shared/ScreenRecorder/ScreenRecorderFab";
-import YouTubeUploaderFab from "../shared/YouTubeUploader/YouTubeUploaderFab";
-import ScreenCameraRecorderFab from "../shared/CameraRecorder/ScreenCameraRecorderFab";
-import ClearLocalStorageWithConfirm from "./ClearLocalStorageWithConfirm";
-import RecentFilesPopup from "./RecentFilesPopup";
-import SaveIcon from "@mui/icons-material/Save";
-import { Paper, Stack, Tooltip, Divider } from "@mui/material";
+import titles from "../../../data/titles.json";
 
 // Dummy languages list (replace with your real list)
 const languages = [
@@ -96,29 +85,6 @@ function TabPanel({ children, hidden }) {
     return <div hidden={hidden}>{!hidden && children}</div>;
 }
 
-const minimalFab = {
-  width: { xs: 22, sm: 38 },
-  height: { xs: 22, sm: 38 },
-  minHeight: "unset",
-  backgroundColor: "#ffffff",
-  color: "#374151",
-  borderRadius: "8px",
-  border: "1px solid #e5e7eb",
-  boxShadow: "none",
-  transition: "all 0.18s ease",
-
-  "&:hover": {
-    backgroundColor: "#f3f4f6",
-    transform: "translateY(-1px)",
-    boxShadow: "0 3px 8px rgba(0,0,0,0.06)"
-  },
-
-  "&:active": {
-    transform: "translateY(0px)",
-    boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
-  }
-};
-
 export default function EditorTimeline({
     sections,
     onChange,
@@ -133,6 +99,8 @@ export default function EditorTimeline({
     selectedTabs, // New prop
     onSelectedTabChange, // New callback prop
     hideUI,
+  selectedHorizontalSection,
+  setSelectedHorizontalSection
 }) {
 
 
@@ -302,10 +270,6 @@ const fileInputRef = useRef(null);
 
     //Add slider ref for horizontal scrolling
     const sliderRef = useRef(null);
-    const [selectedHorizontalSection, setSelectedHorizontalSection] = useState(
-        sections.length > 0 ? sections[0].id : null
-    );
-
 
     useEffect(() => {
         if (sliderRef.current && selectedHorizontalSection) {
@@ -343,7 +307,8 @@ const fileInputRef = useRef(null);
   />
   <Box sx={{width: "100%"}}>
          
-  
+
+
   {displayMode === "vertical" && (
                      <Timeline
   sx={{
@@ -370,8 +335,7 @@ const fileInputRef = useRef(null);
     "&::before": { display: "none" },
     mb: 4   // <-- clean vertical spacing
   }}
->
-                                
+>     
                                 <TimelineContent sx={{  width: "100%",p: 0 }}>
                                    <Card
   elevation={0}
@@ -467,7 +431,7 @@ const fileInputRef = useRef(null);
 
                                             {/* Section Description */}
                                             <Box mt={3} sx={{ maxWidth: "90vw" }}>
-                                                <Chip sx={{ mb: 2 }} label={<Typography variant="subtitle2" >Content</Typography>} />
+                                                <Chip sx={{ mb: 2 }} label={<Typography variant="subtitle2" > {titles.pages.runbookEditor.sections.content}</Typography>} />
                                                 <MarkdownEditorWithToolbar sx={{ mb: 12, width: "100%" }}
                                                  
                                                     content={section.description}
@@ -477,7 +441,7 @@ const fileInputRef = useRef(null);
 
                                             {/* =================== CODE FILES =================== */}
                                             <Box mt={3} sx={{ maxWidth: "1100px" }}>
-                                                <Chip label={<Typography variant="subtitle2">Resource Files</Typography>} />
+                                                <Chip label={<Typography variant="subtitle2">{titles.pages.runbookEditor.sections.resourceFiles}</Typography>} />
                                                 <Tabs
                                                     variant="scrollable"
                                                     scrollButtons="auto"
@@ -497,7 +461,10 @@ const fileInputRef = useRef(null);
                                                                         userSelect: "none",
                                                                     }}
                                                                 >
-                                                                    <Typography>{`${file.order}. ${file.filename
+                                                                    <Typography sx={{
+    mr: { xs: 0.2, sm: 1, md: 2 },
+    fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem", lg: "1rem" } 
+  }}>{`${file.order}. ${file.filename
                                                                         }`}</Typography>
                                                                     <IconButton
                                                                         size="small"
@@ -635,6 +602,7 @@ const fileInputRef = useRef(null);
                                                                     scrollBeyondLastLine: false,
                                                                     automaticLayout: true,
                                                                     wordWrap: "on",
+                                                                    padding:{left:0}
                                                                 }}
                                                             />
                                                         </TabPanel>
@@ -644,7 +612,7 @@ const fileInputRef = useRef(null);
 
                                             {/* =================== MEDIA FILES =================== */}
                                             <Box mt={1} sx={{ maxWidth: "1100px" }}>
-                                                <Chip label={<Typography variant="subtitle2">Media Files</Typography>} />
+                                                <Chip label={<Typography variant="subtitle2">{titles.pages.runbookEditor.sections.mediaFiles}</Typography>} />
                                                 <Tabs
                                                     variant="scrollable"
                                                     scrollButtons="auto"
@@ -663,7 +631,10 @@ const fileInputRef = useRef(null);
                                                                         userSelect: "none",
                                                                     }}
                                                                 >
-                                                                    <Typography>{`${file.order}. Media`}</Typography>
+                                                                    <Typography sx={{
+    mr: { xs: 0.2, sm: 1, md: 2 },
+    fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem", lg: "1rem" }
+  }}>{`${file.order}. Media`}</Typography>
                                                                     <IconButton
                                                                         size="small"
                                                                         onClick={(e) => {
@@ -956,7 +927,7 @@ const fileInputRef = useRef(null);
 
                                                     {/* =================== CODE FILES =================== */}
                                                     <Box mt={3} sx={{ maxWidth: "1100px" }}>
-                                                        <Chip label={<Typography variant="subtitle2">Resource Files</Typography>} />
+                                                        <Chip label={<Typography variant="subtitle2"> {titles.pages.runbookEditor.sections.resourceFiles}</Typography>} />
                                                         <Tabs
                                                             variant="scrollable"
                                                             scrollButtons="auto"
@@ -976,8 +947,11 @@ const fileInputRef = useRef(null);
                                                                                 userSelect: "none",
                                                                             }}
                                                                         >
-                                                                            <Typography>{`${file.order}. ${file.filename
-                                                                                }`}</Typography>
+                                                                            <Typography sx={{
+    mr: { xs: 0.2, sm: 1, md: 2 },
+    fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem", lg: "1rem" } 
+  }}>{`${file.order}. ${file.filename
+                                                                        }`}</Typography>
                                                                             <IconButton
                                                                                 size="small"
                                                                                 onClick={(e) => {
@@ -1113,6 +1087,7 @@ const fileInputRef = useRef(null);
                                                                             scrollBeyondLastLine: false,
                                                                             automaticLayout: true,
                                                                             wordWrap: "on",
+                                                                            padding:{left:0}
                                                                         }}
                                                                     />
                                                                 </TabPanel>
@@ -1122,7 +1097,7 @@ const fileInputRef = useRef(null);
 
                                                     {/* =================== MEDIA FILES =================== */}
                                                     <Box mt={3} sx={{ maxWidth: "1100px" }}>
-                                                        <Chip label={<Typography variant="subtitle2">Media Files</Typography>} />
+                                                        <Chip label={<Typography variant="subtitle2">{titles.pages.runbookEditor.sections.mediaFiles}</Typography>} />
                                                         <Tabs
                                                             variant="scrollable"
                                                             scrollButtons="auto"
@@ -1141,7 +1116,10 @@ const fileInputRef = useRef(null);
                                                                                 userSelect: "none",
                                                                             }}
                                                                         >
-                                                                            <Typography>{`${file.order}. Media`}</Typography>
+                                                                            <Typography sx={{
+    mr: { xs: 0.2, sm: 1, md: 2 },
+    fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem", lg: "1rem" }
+  }}>{`${file.order}. Media`}</Typography>
                                                                             <IconButton
                                                                                 size="small"
                                                                                 onClick={(e) => {

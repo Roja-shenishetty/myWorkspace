@@ -137,12 +137,6 @@ const initialSections2 = [
     },
 ];
 
-const handleScrollTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-};
-const handleScrollBottom = () => {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-};
 
 
 const getInitialSections = () => {
@@ -166,6 +160,8 @@ const loadRecentFiles = () => {
 };
 
 export default function RunBookEditor() {
+    
+    const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [sections, setSections] = useState(getInitialSections);
     const [recentFiles, setRecentFiles] = useState(loadRecentFiles);
@@ -179,6 +175,46 @@ export default function RunBookEditor() {
         code: {},  // sectionId -> selected code tab index
         media: {}  // sectionId -> selected media tab index
     });
+
+    const [selectedHorizontalSection, setSelectedHorizontalSection] = useState(
+        sections.length > 0 ? sections[0].id : null
+    );
+const handleScrollTop = () => {
+     if (currentSectionIndex <= 0) return;
+
+  const prevIndex = currentSectionIndex - 1;
+  const section = sections[prevIndex];
+
+  const element = document.getElementById(`section-${section.id}`);
+
+  if (element) {
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+    setCurrentSectionIndex(prevIndex);
+    setSelectedHorizontalSection(sections[prevIndex].id);
+  }
+};
+const handleScrollBottom = () => {
+   if (currentSectionIndex >= sections.length - 1) return;
+
+  const nextIndex = currentSectionIndex + 1;
+  const section = sections[nextIndex];
+
+  const element = document.getElementById(`section-${section.id}`);
+
+  if (element) {
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+    setCurrentSectionIndex(nextIndex);
+     setSelectedHorizontalSection(sections[nextIndex].id);
+  }
+};
 
 
     const handleClearLocal = () => {
@@ -741,6 +777,8 @@ tab={tab}
                                                     },
                                                 }));
                                             }}
+                                            selectedHorizontalSection={selectedHorizontalSection}
+  setSelectedHorizontalSection={setSelectedHorizontalSection}
                                         />
                 
                                         <Fab

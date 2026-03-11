@@ -1,9 +1,9 @@
 {
   "pages": {
     "runbookEditor": {
-      "title": "runbook.json",
       "sections": {
-        "metadata": "Metadata",
+        "resourceFiles":"Resource Files",
+        "mediaFiles": "Media Files",
         "content": "Content",
         "preview": "Preview"
       }

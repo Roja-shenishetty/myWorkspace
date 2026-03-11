@@ -2,8 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { Box, Fab, Tooltip,Paper,Stack,Divider } from "@mui/material";
 
 const minimalFab = {
-  width: { xs: 26, sm: 34 },
-  height: { xs: 26, sm: 34 },
+  width: { xs: 28, sm: 34 },
+  height: { xs: 28, sm: 34 },
   minHeight: "unset",
   backgroundColor: "#ffffff",
   color: "#374151",
@@ -13,7 +13,7 @@ const minimalFab = {
   transition: "all 0.18s ease",
 
   "&:hover": {
-    backgroundColor: "#f3f4f6",
+    backgroundColor: "rgba(25,118,210,0.5)",
     transform: "translateY(-1px)",
     boxShadow: "0 3px 8px rgba(0,0,0,0.06)"
   }

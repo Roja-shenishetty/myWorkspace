@@ -106,8 +106,8 @@ export default function ScreenRecorder({ onUpload, position = 'fixed' }) {
   aria-label="record"
   onClick={() => setIsControlsVisible(!isControlsVisible)}
   sx={{
-    width: { xs: 26, sm: 38 },
-  height: { xs: 26, sm: 38 },
+    width: { xs: 28, sm: 38 },
+  height: { xs: 28, sm: 38 },
   minHeight: "unset",
   backgroundColor: "#f9fafb",
   color: "#374151",

@@ -108,11 +108,11 @@ export default function StyledPreviewTimeline({ sections }) {
               {/* ================= MEDIA FILES ================= */}
               {section.mediaFiles?.length > 0 && (
                 <div>
-                  <div className="flex space-x-2 mb-2 mt-2">
+                  <div className="flex space-x-2 mb-2 mt-2 overflow-x-auto whitespace-nowrap hide-scrollbar lg:flex-wrap lg:overflow-visible">
                     {section.mediaFiles.map((media, mIdx) => (
                       <button
                         key={media.id}
-                        className={`px-3 py-1 border rounded text-xs ${activeTab[`media-${section.id}`] === mIdx ||
+                        className={`px-3 py-1 lg:mt-2 lg:ml-2 border rounded text-xs ${activeTab[`media-${section.id}`] === mIdx ||
                           (activeTab[`media-${section.id}`] === undefined &&
                             mIdx === 0)
                           ? "bg-gray-200 font-semibold"

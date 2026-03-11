@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Fab, Popover, Box, Typography, Button,Tooltip } from "@mui/material";
 import RestartAlt from "@mui/icons-material/RestartAlt";
+import FileAppBar from "../shared/FileAppBar/FileAppBar";
 
 
 export default function ClearLocalStorageWithConfirm({ onClear }) {
@@ -30,8 +31,8 @@ export default function ClearLocalStorageWithConfirm({ onClear }) {
   onClick={handleClick}
   ref={buttonRef}
   sx={{
-   width: { xs: 26, sm: 38 },
-  height: { xs: 26, sm: 38 },
+   width: { xs: 28, sm: 38 },
+  height: { xs: 28, sm: 38 },
   minHeight: "unset",
   backgroundColor: "#f9fafb",
   color: "#374151",
