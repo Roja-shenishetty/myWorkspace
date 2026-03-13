@@ -16,9 +16,15 @@ const MarkdownEditorWithToolbar = ({content="### Heading", onChange}) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 //console.log("content is....",value)
   return (
-    <div style={{height:500}} className="md-editor-wrapper markdown-container" 
+    <div style={{
+height: isMobile ? 320 : "auto",
+minHeight: isMobile ? 320 : 500,
+border: "1px solid #dcdcdc",
+borderRadius: "2px",
+overflow: "hidden"
+}} className="md-editor-wrapper markdown-container" 
      data-color-mode="light" >
-      <MDEditor height={500} value={value} onChange={setValue}  view={{ menu: true, md: true, html: false }}  preview={isMobile ? "preview" : "edit"} hideToolbar={isMobile}/>
+      <MDEditor  height={isMobile ? 320 : 500} value={value} onChange={setValue}  view={{ menu: true, md: true, html: false }}  preview={isMobile ? "preview" : "edit"} hideToolbar={isMobile}/>
    </div>
   );
 };

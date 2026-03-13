@@ -324,7 +324,9 @@ const fileInputRef = useRef(null);
     "& .MuiTimelineItem-root:before": {
       flex: 0,
       padding: 0,
-    }
+    },
+    border:"1px solid #e5e7eb",
+    borderRadius: "2px"
   }}
 >
                         {sections.map((section, idx) => (
@@ -333,7 +335,7 @@ const fileInputRef = useRef(null);
   id={`section-${section.id}`}
   sx={{
     "&::before": { display: "none" },
-    mb: 4   // <-- clean vertical spacing
+    m: {xs:0 ,sm:2, md:2, lg:2}  // <-- clean vertical spacing
   }}
 >     
                                 <TimelineContent sx={{  width: "100%",p: 0 }}>
@@ -353,12 +355,12 @@ const fileInputRef = useRef(null);
                                         <CardContent>
                                             {/* Section Info and Tools  */}
                                             <Box>
-                                                <Box display="flex" alignItems="left" gap={2} mb={2} width={"100%"}>
+                                                <Box display="flex" alignItems="left" gap={2} m={{ xs: 1, sm: 2}} width={"100%"}>
                                                     {/* Section Info  */}
                                                     <TextField
-                                                        label={<Chip size="large" sx={{ m: 0, p: 2, fontSize: "1.1em", width: "100%" }}  label={`#${idx + 1}`}></Chip>}
+                                                        label={<Chip size="large" sx={{ m: 0, p: 1, fontSize: "1.1em", width: "100%" }}  label={`#${idx + 1}`}></Chip>}
                                                         variant="standard"
-                                                        sx={{ p: 2, minWidth: "200px" }}
+                                                        sx={{ p:1, minWidth: "200px" }}
                                                         fullWidth
                                                         value={section.title}
                                                         onChange={(e) =>
@@ -366,7 +368,7 @@ const fileInputRef = useRef(null);
                                                         }   
                                                     />
                                                 </Box>
-                                                <Box display="flex" alignItems="center" gap={1} mb={2} width={"100%"}>
+                                                <Box display="flex" alignItems="center" gap={1} m={{ xs: 1, sm: 2}} width={"100%"}>
                                                     {/*Section tools */}
                                                     <TimePopupButton
                                                         timeToRead={section.timeToRead}
@@ -430,8 +432,8 @@ const fileInputRef = useRef(null);
 
 
                                             {/* Section Description */}
-                                            <Box mt={3} sx={{ maxWidth: "90vw" }}>
-                                                <Chip sx={{ mb: 2 }} label={<Typography variant="subtitle2" > {titles.pages.runbookEditor.sections.content}</Typography>} />
+                                            <Box mt={{ xs: 1, sm: 2}} sx={{ maxWidth: "90vw" }}>
+                                                <Chip sx={{m:{xs:1 ,sm:2, md:2, lg:2}}}  label={<Typography variant="subtitle2" > {titles.pages.runbookEditor.sections.content}</Typography>} />
                                                 <MarkdownEditorWithToolbar sx={{ mb: 12, width: "100%" }}
                                                  
                                                     content={section.description}
@@ -440,7 +442,7 @@ const fileInputRef = useRef(null);
                                             </Box>
 
                                             {/* =================== CODE FILES =================== */}
-                                            <Box mt={3} sx={{ maxWidth: "1100px" }}>
+                                            <Box mt={{ xs: 2, sm: 3, md: 3 }} sx={{ maxWidth: "1100px" }}>
                                                 <Chip label={<Typography variant="subtitle2">{titles.pages.runbookEditor.sections.resourceFiles}</Typography>} />
                                                 <Tabs
                                                     variant="scrollable"
@@ -581,7 +583,7 @@ const fileInputRef = useRef(null);
                                                                 )}
                                                             </Box>
                                                             <Editor
-                                                                height="300px"
+                                                                height={{ xs: "150px", sm: "300px"}}
                                                                 language={
                                                                     file.language === "jinja2"
                                                                         ? "html"
@@ -793,7 +795,7 @@ const fileInputRef = useRef(null);
                 )}
 
                 {displayMode === "horizontal" && (
-                    <Box sx={{ position: "relative", width: "95%" }}>
+                    <Box sx={{ position: "relative", width: "98%" }}>
                         <Box
                             ref={sliderRef}
                             sx={{
@@ -834,7 +836,7 @@ const fileInputRef = useRef(null);
     />
   )}
 </TimelineSeparator>
-                                        <TimelineContent sx={{ py: 2 }}>
+                                        <TimelineContent sx={{ py: 1 }}>
                                             <Card variant="outlined" sx={{ width: "80vw" }}>
                                                 <CardContent>
                                                       {/* Section Info and Tools  */}
@@ -846,7 +848,7 @@ const fileInputRef = useRef(null);
                                                     <TextField
                                                         label={<Chip size="large" sx={{ m: 0, p: 2, fontSize: "1.1em", width: "100%" }} label={`#${section.order}`}></Chip>}
                                                         variant="standard"
-                                                        sx={{ p: 2, minWidth: "200px" }}
+                                                        sx={{ p: 1, minWidth: "200px" }}
                                                         fullWidth
                                                         value={section.title}
                                                         onChange={(e) =>
@@ -919,14 +921,14 @@ const fileInputRef = useRef(null);
 
 
                                                     {/* Section Description */}
-                                                    <Chip sx={{ mb: 2 }} label={<Typography variant="subtitle2" >Content</Typography>} />
+                                                    <Chip sx={{ mb: 2 }} label={<Typography variant="subtitle2" >{titles.pages.runbookEditor.sections.content}</Typography>} />
                                                     <MarkdownEditorWithToolbar
                                                         content={section.description}
                                                         onChange={(val) => onChange(section.id, "description", null, val)}
                                                     />
 
                                                     {/* =================== CODE FILES =================== */}
-                                                    <Box mt={3} sx={{ maxWidth: "1100px" }}>
+                                                    <Box mt={{xs:0 ,sm:2, md:2, lg:2}} sx={{ maxWidth: "1100px" }}>
                                                         <Chip label={<Typography variant="subtitle2"> {titles.pages.runbookEditor.sections.resourceFiles}</Typography>} />
                                                         <Tabs
                                                             variant="scrollable"
@@ -1066,7 +1068,7 @@ const fileInputRef = useRef(null);
                                                                         )}
                                                                     </Box>
                                                                     <Editor
-                                                                        height="300px"
+                                                                        height={{ xs: "150px", sm: "300px"}}
                                                                         language={
                                                                             file.language === "jinja2"
                                                                                 ? "html"
@@ -1215,7 +1217,7 @@ const fileInputRef = useRef(null);
                                                                                     e.target.value
                                                                                 )
                                                                             }
-                                                                            sx={{ mb: 2 }}
+                                                                            sx={{ mb: 1 }}
                                                                         />
                                                                         {localEdit && (
                                                                             <Button
