@@ -68,7 +68,7 @@ export default function StyledPreviewTimeline({ sections }) {
               {section.codeFiles?.length > 0 && (
                 <div>
                   {/* Tabs for filenames */}
-                  <div className="flex space-x-2 mb-2 mt-6">
+                  <div className="flex space-x-2 mb-2 mt-6 overflow-x-auto whitespace-nowrap hide-scrollbar lg:flex-wrap lg:overflow-visible">
                     {section.codeFiles.map((file, fIdx) => (
                       <button
                         key={file.id}
